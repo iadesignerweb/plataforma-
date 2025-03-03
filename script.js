@@ -17,13 +17,14 @@ function submitForm() {
         nome: nome,
         idade: idade,
         descricao: descricao,
-        dataMatricula: new Date().toLocaleDateString('pt-BR')
+        dataMatricula: new Date().toLocaleDateString('pt-BR'),
+        bloqueado: false // Status inicial do aluno
     };
     localStorage.setItem(uniqueCode, JSON.stringify(formData));
 
     // Exibir pop-up com o ID de acesso
     document.getElementById('popupID').textContent = uniqueCode;
-    document.getElementById('popup').style.display = 'block'; // Exibe o popup
+    document.getElementById('popup').style.display = 'block';
 
     // Enviar ID para o WhatsApp (oculto para o aluno)
     const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
@@ -67,9 +68,14 @@ function login() {
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
         carregarListaAlunos();
+        renderizarGraficosAdmin();
     } else if (formData) {
-        // Login do aluno
         const data = JSON.parse(formData);
+        if (data.bloqueado) {
+            alert('Este aluno está bloqueado!');
+            return;
+        }
+        // Login do aluno
         document.getElementById('dashboardNome').textContent = data.nome;
         document.getElementById('dataMatricula').textContent = data.dataMatricula;
         document.getElementById('cadastroArea').style.display = 'none';
@@ -98,11 +104,28 @@ function carregarListaAlunos() {
                 <span>${aluno.nome} (ID: ${key})</span>
                 <span class="contagem-regressiva">${calcularDiasRestantes(aluno.dataMatricula)} dias restantes</span>
                 <div class="status ${calcularStatusPagamento(aluno.dataMatricula) ? 'ativo' : 'inadimplente'}"></div>
+                <button onclick="bloquearAluno('${key}')">${aluno.bloqueado ? 'Desbloquear' : 'Bloquear'}</button>
+                <button onclick="removerAluno('${key}')">Remover</button>
             `;
-            alunoItem.onclick = () => abrirDashboardAluno(key);
             listaAlunos.appendChild(alunoItem);
         }
     }
+}
+
+// Função para bloquear/desbloquear aluno
+function bloquearAluno(id) {
+    const aluno = JSON.parse(localStorage.getItem(id));
+    aluno.bloqueado = !aluno.bloqueado;
+    localStorage.setItem(id, JSON.stringify(aluno));
+    alert(`Aluno ${aluno.bloqueado ? 'bloqueado' : 'desbloqueado'} com sucesso!`);
+    carregarListaAlunos();
+}
+
+// Função para remover aluno
+function removerAluno(id) {
+    localStorage.removeItem(id);
+    alert('Aluno removido com sucesso!');
+    carregarListaAlunos();
 }
 
 // Função para calcular dias restantes para o vencimento
@@ -123,134 +146,100 @@ function calcularStatusPagamento(dataMatricula) {
     return diffDays <= 30;
 }
 
-// Função para abrir dashboard do aluno
-function abrirDashboardAluno(id) {
-    const aluno = JSON.parse(localStorage.getItem(id));
-    document.getElementById('dashboardNome').textContent = aluno.nome;
-    document.getElementById('dataMatricula').textContent = aluno.dataMatricula;
-    document.getElementById('cadastroArea').style.display = 'none';
-    document.getElementById('loginArea').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('adminDashboard').style.display = 'none';
+// Função para renderizar gráficos na área do administrador
+function renderizarGraficosAdmin() {
+    const ctx1 = document.getElementById('graficoAlunos').getContext('2d');
+    const ctx2 = document.getElementById('graficoStatusPagamento').getContext('2d');
+    const ctx3 = document.getElementById('graficoIdadeAlunos').getContext('2d');
 
-    // Renderizar gráfico de mensalidades
-    renderizarGraficoMensalidades(aluno.dataMatricula);
-}
+    // Dados para os gráficos
+    const alunos = [];
+    const statusPagamento = { ativo: 0, inadimplente: 0 };
+    const idades = { '10-20': 0, '21-30': 0, '31-40': 0, '41+': 0 };
 
-// Função para renderizar gráfico de mensalidades
-function renderizarGraficoMensalidades(dataMatricula) {
-    const ctx = document.getElementById('graficoMensalidades').getContext('2d');
-    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-    const mesMatricula = dataMatriculaObj.getMonth();
-    const anoMatricula = dataMatriculaObj.getFullYear();
-    const hoje = new Date();
-    const statusMesAtual = calcularStatusMesAtual(dataMatricula);
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('ALUNO-')) {
+            const aluno = JSON.parse(localStorage.getItem(key));
+            alunos.push(aluno);
 
-    const dados = meses.map((mes, index) => {
-        if (index < mesMatricula) {
-            return null; // Meses antes da matrícula
-        } else if (index === mesMatricula) {
-            if (statusMesAtual === -1) {
-                return '#dc3545'; // Inadimplente
+            // Status de pagamento
+            if (calcularStatusPagamento(aluno.dataMatricula)) {
+                statusPagamento.ativo++;
             } else {
-                const verde = Math.floor(255 * statusMesAtual);
-                return `rgba(40, 167, 69, ${statusMesAtual})`; // Gradiente de verde
+                statusPagamento.inadimplente++;
             }
-        } else {
-            return '#ffc107'; // Meses futuros em amarelo
-        }
-    });
 
-    new Chart(ctx, {
+            // Distribuição por idade
+            const idade = aluno.idade;
+            if (idade >= 10 && idade <= 20) idades['10-20']++;
+            else if (idade >= 21 && idade <= 30) idades['21-30']++;
+            else if (idade >= 31 && idade <= 40) idades['31-40']++;
+            else idades['41+']++;
+        }
+    }
+
+    // Gráfico 1: Número de alunos cadastrados
+    new Chart(ctx1, {
         type: 'bar',
         data: {
-            labels: meses,
+            labels: ['Alunos Cadastrados'],
             datasets: [{
-                label: '',
-                data: dados.map((cor, index) => cor ? 1 : null),
-                backgroundColor: dados,
-                borderWidth: 1
+                label: 'Total',
+                data: [alunos.length],
+                backgroundColor: '#007bff',
             }]
         },
         options: {
             scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            },
-            animation: {
-                duration: 1000,
-                easing: 'easeInOutQuad'
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Gráfico 2: Status de pagamento
+    new Chart(ctx2, {
+        type: 'pie',
+        data: {
+            labels: ['Ativos', 'Inadimplentes'],
+            datasets: [{
+                data: [statusPagamento.ativo, statusPagamento.inadimplente],
+                backgroundColor: ['#28a745', '#dc3545'],
+            }]
+        }
+    });
+
+    // Gráfico 3: Distribuição por idade
+    new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: ['10-20', '21-30', '31-40', '41+'],
+            datasets: [{
+                label: 'Alunos',
+                data: [idades['10-20'], idades['21-30'], idades['31-40'], idades['41+']],
+                backgroundColor: '#ffc107',
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
             }
         }
     });
 }
 
-// Função para calcular o status do mês atual
-function calcularStatusMesAtual(dataMatricula) {
-    const hoje = new Date();
-    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-    const diffTime = Math.abs(hoje - dataMatriculaObj);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays <= 30) {
-        return (30 - diffDays) / 30; // Retorna a porcentagem de dias restantes
-    } else {
-        return -1; // Mês inadimplente
-    }
-}
-
-// Função para gerar boleto
-function gerarBoleto() {
-    alert('Boleto gerado com sucesso!');
-}
-
-// Funções para as opções do dashboard
-function acessarCurso(curso) {
-    alert(`Acessando curso de ${curso}`);
-}
-
-function acessarBancoQuestoes() {
-    alert('Acessando Banco de Questões');
-}
-
-function acessarBiblioteca() {
-    alert('Acessando Biblioteca de Aulas');
-}
-
-function acessarGrupoTurma() {
-    alert('Acessando Grupo da Turma');
-}
-
-// Função para acessar a lista de alunos
-function acessarAlunos() {
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('chat').style.display = 'block';
-}
-
-// Função para voltar à área de cadastro
-function voltarParaCadastro() {
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('cadastroArea').style.display = 'block';
-    document.getElementById('loginArea').style.display = 'block';
-}
-
-// Função para logout
-function logout() {
-    document.getElementById('dashboard').style.display = 'none';
+// Função para logout do administrador
+function logoutAdmin() {
+    document.getElementById('adminDashboard').style.display = 'none';
     document.getElementById('cadastroArea').style.display = 'block';
     document.getElementById('loginArea').style.display = 'block';
     document.getElementById('loginID').value = '';
     alert('Você saiu do sistema.');
 }
 
-// Função para logout do administrador
-function logoutAdmin() {
-    document.getElementById('adminDashboard').style.display = 'none';
+// Função para logout do aluno
+function logout() {
+    document.getElementById('dashboard').style.display = 'none';
     document.getElementById('cadastroArea').style.display = 'block';
     document.getElementById('loginArea').style.display = 'block';
     document.getElementById('loginID').value = '';
