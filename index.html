@@ -356,37 +356,16 @@
 
         /* Estilo para o vídeo incorporado */
         .video-container {
-            width: 100%;
-            max-width: 800px;
-            margin: 20px auto;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
             border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .video-container iframe {
             width: 100%;
-            height: 450px;
+            height: 200px;
             border: none;
-        }
-
-        /* Ajustes para dispositivos móveis */
-        @media (max-width: 768px) {
-            .video-container iframe {
-                height: 250px; /* Altura menor para dispositivos móveis */
-            }
-
-            .dashboard-content {
-                padding: 15px; /* Reduzir o padding em dispositivos móveis */
-            }
-
-            .painel-grafico {
-                padding: 15px; /* Reduzir o padding em dispositivos móveis */
-            }
-
-            .dashboard-options {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Ajustar o grid para telas menores */
-            }
         }
     </style>
 </head>
@@ -400,6 +379,11 @@
 
         <!-- Conteúdo Principal -->
         <div class="main-content">
+            <!-- Vídeo de Apresentação -->
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/PGw2LhOak2s" title="Apresentação da Plataforma" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
             <!-- Área de Cadastro -->
             <div class="form-container" id="cadastroArea">
                 <h2>Cadastro de Aluno</h2>
@@ -469,11 +453,6 @@
                         <div class="gerar-boleto">
                             <button onclick="gerarBoleto()">Gerar Boleto</button>
                         </div>
-                    </div>
-
-                    <!-- Vídeo Incorporado -->
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/PGw2LhOak2s?si=AmUj5Ak_xFFHMyw_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
@@ -754,4 +733,4 @@
         }
     </script>
 </body>
-                            </html>
+</html>
