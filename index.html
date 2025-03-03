@@ -4,372 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma de Cursos</title>
+    <link rel="stylesheet" href="styles.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Chart.js para gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Reset CSS */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            flex-direction: column;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            animation: fadeIn 1s ease-in-out;
-            flex: 1;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 30px;
-            text-align: center;
-            animation: slideDown 0.5s ease-in-out;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 1.2rem;
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 400px;
-            margin-bottom: 20px;
-            animation: fadeInUp 0.5s ease-in-out;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-container h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #007bff;
-            text-align: center;
-        }
-
-        input[type="text"], input[type="number"], textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            transition: border-color 0.3s ease;
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
-            border-color: #007bff;
-        }
-
-        textarea {
-            resize: vertical;
-            height: 100px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        .dashboard {
-            display: none;
-            width: 100%;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .menu-superior {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #007bff;
-            padding: 15px 30px;
-            color: white;
-            animation: slideDown 0.5s ease-in-out;
-        }
-
-        .menu-superior a {
-            color: white;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: opacity 0.3s ease;
-        }
-
-        .menu-superior a:hover {
-            opacity: 0.8;
-        }
-
-        .dashboard-content {
-            padding: 30px;
-        }
-
-        .dashboard-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .option {
-            background-color: #f1f3f5;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .option i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #007bff;
-        }
-
-        .option p {
-            font-size: 1rem;
-            color: #555;
-        }
-
-        .painel-grafico {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .painel-grafico h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-
-        .status-pagamento {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .status-pagamento span {
-            font-size: 1rem;
-            color: #555;
-        }
-
-        .status-pagamento .ativo {
-            color: #28a745;
-        }
-
-        .status-pagamento .inadimplente {
-            color: #dc3545;
-        }
-
-        .gerar-boleto {
-            margin-top: 20px;
-        }
-
-        .gerar-boleto button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .gerar-boleto button:hover {
-            background-color: #0056b3;
-        }
-
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .popup p {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-
-        .popup button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .popup button:hover {
-            background-color: #0056b3;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-options {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-        }
-
-        .admin-dashboard {
-            display: none;
-            width: 100%;
-            padding: 30px;
-        }
-
-        .admin-dashboard h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-
-        .lista-alunos {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .aluno-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #f1f3f5;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .aluno-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .aluno-item span {
-            font-size: 1rem;
-            color: #555;
-        }
-
-        .aluno-item .status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .aluno-item .status.ativo {
-            background-color: #28a745;
-        }
-
-        .aluno-item .status.inadimplente {
-            background-color: #dc3545;
-        }
-
-        .contagem-regressiva {
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #007bff;
-            color: white;
-            width: 100%;
-            margin-top: auto;
-        }
-
-        footer p {
-            font-size: 0.9rem;
-        }
-
-        /* Estilo para o vídeo incorporado */
-        .video-container {
-            margin-bottom: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .video-container iframe {
-            width: 100%;
-            height: 200px;
-            border: none;
-        }
-    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Menu Hamburger -->
+    <div class="menu-hamburger" id="menuHamburger">
+        <div class="hamburger-icon" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#" onclick="showSection('quem-somos')">Quem Somos</a></li>
+                <li><a href="#" onclick="showSection('precos')">Preços</a></li>
+                <li><a href="#" onclick="showSection('politica')">Política de Privacidade</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Botão WhatsApp 3D -->
+    <div class="whatsapp-button" onclick="window.open('https://wa.me/5587999786261', '_blank')">
+        <i class="fab fa-whatsapp"></i>
+    </div>
+
+    <!-- Conteúdo Principal -->
     <div class="container">
         <!-- Cabeçalho -->
         <header>
@@ -377,102 +40,97 @@
             <p>Seu portal para o conhecimento</p>
         </header>
 
-        <!-- Conteúdo Principal -->
-        <div class="main-content">
-            <!-- Vídeo de Apresentação -->
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/PGw2LhOak2s" title="Apresentação da Plataforma" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <!-- Área de Login -->
+        <div class="main-content" id="loginArea">
+            <div class="slideshow">
+                <div class="slide active" style="background-image: url('assets/images/slide1.jpg');"></div>
+                <div class="slide" style="background-image: url('assets/images/slide2.jpg');"></div>
+                <div class="slide" style="background-image: url('assets/images/slide3.jpg');"></div>
             </div>
-
-            <!-- Área de Cadastro -->
-            <div class="form-container" id="cadastroArea">
-                <h2>Cadastro de Aluno</h2>
-                <form id="formCadastro" onsubmit="return submitForm()">
-                    <input type="text" id="nome" placeholder="Digite seu nome" required>
-                    <input type="number" id="idade" placeholder="Digite sua idade" required>
-                    <textarea id="descricao" placeholder="Descreva-se brevemente..." required></textarea>
-                    <button type="submit">Cadastrar</button>
-                </form>
-            </div>
-
-            <!-- Área de Login -->
-            <div class="form-container" id="loginArea">
+            <div class="form-container">
                 <h2>Login do Aluno</h2>
                 <input type="text" id="loginID" placeholder="Digite seu ID de acesso">
                 <button onclick="login()">Entrar</button>
             </div>
+        </div>
 
-            <!-- Dashboard do Aluno -->
-            <div class="dashboard" id="dashboard">
-                <!-- Menu Superior -->
-                <div class="menu-superior">
-                    <a href="#" onclick="voltarParaCadastro()">Área de Cadastro</a>
-                    <a href="#" onclick="logout()">Logout</a>
-                </div>
-
-                <!-- Conteúdo do Dashboard -->
-                <div class="dashboard-content">
-                    <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>
-                    <div class="dashboard-options">
-                        <div class="option" onclick="acessarCurso('Física')">
-                            <i class="fas fa-atom"></i>
-                            <p>Lições de Física</p>
-                        </div>
-                        <div class="option" onclick="acessarCurso('Matemática')">
-                            <i class="fas fa-calculator"></i>
-                            <p>Lições de Matemática</p>
-                        </div>
-                        <div class="option" onclick="acessarBancoQuestoes()">
-                            <i class="fas fa-book"></i>
-                            <p>Banco de Questões</p>
-                        </div>
-                        <div class="option" onclick="acessarBiblioteca()">
-                            <i class="fas fa-book-open"></i>
-                            <p>Biblioteca de Aulas</p>
-                        </div>
-                        <div class="option" onclick="acessarGrupoTurma()">
-                            <i class="fas fa-users"></i>
-                            <p>Grupo da Turma</p>
-                        </div>
-                        <div class="option" onclick="acessarAlunos()">
-                            <i class="fas fa-user-graduate"></i>
-                            <p>Alunos</p>
-                        </div>
-                    </div>
-
-                    <!-- Painel Gráfico -->
-                    <div class="painel-grafico">
-                        <h2>Painel do Aluno</h2>
-                        <div class="status-pagamento">
-                            <span>Data da Matrícula: <strong id="dataMatricula">01/05/2025</strong></span>
-                            <span>Status: <span class="ativo">● Ativo</span></span>
-                        </div>
-                        <div class="grafico-mensalidades">
-                            <canvas id="graficoMensalidades"></canvas>
-                        </div>
-                        <div class="gerar-boleto">
-                            <button onclick="gerarBoleto()">Gerar Boleto</button>
-                        </div>
-                    </div>
+        <!-- Dashboard do Aluno -->
+        <div class="dashboard" id="dashboard">
+            <div class="menu-superior">
+                <a href="#" onclick="voltarParaLogin()">Logout</a>
+                <div class="notificacao" onclick="abrirNotificacoes()">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge" id="notificacaoBadge">0</span>
                 </div>
             </div>
-
-            <!-- Dashboard do Administrador -->
-            <div class="admin-dashboard" id="adminDashboard">
-                <h1>Painel do Administrador</h1>
-                <div class="lista-alunos" id="listaAlunos">
-                    <!-- Lista de alunos será preenchida dinamicamente -->
+            <div class="dashboard-content">
+                <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>
+                <div class="dashboard-options">
+                    <div class="option" onclick="acessarCurso('Física')">
+                        <i class="fas fa-atom"></i>
+                        <p>Lições de Física</p>
+                    </div>
+                    <div class="option" onclick="acessarCurso('Matemática')">
+                        <i class="fas fa-calculator"></i>
+                        <p>Lições de Matemática</p>
+                    </div>
+                    <div class="option" onclick="acessarBancoQuestoes()">
+                        <i class="fas fa-book"></i>
+                        <p>Banco de Questões</p>
+                    </div>
+                    <div class="option" onclick="acessarBiblioteca()">
+                        <i class="fas fa-book-open"></i>
+                        <p>Biblioteca de Aulas</p>
+                    </div>
+                    <div class="option" onclick="acessarGrupoTurma()">
+                        <i class="fas fa-users"></i>
+                        <p>Grupo da Turma</p>
+                    </div>
+                    <div class="option" onclick="acessarAlunos()">
+                        <i class="fas fa-user-graduate"></i>
+                        <p>Alunos</p>
+                    </div>
                 </div>
+                <div class="downloads" id="downloads">
+                    <h2>Downloads</h2>
+                    <div class="arquivos" id="arquivos"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard do Administrador -->
+        <div class="admin-dashboard" id="adminDashboard">
+            <div class="menu-superior">
+                <a href="#" onclick="voltarParaLogin()">Logout</a>
+                <div class="upload" onclick="abrirUpload()">
+                    <i class="fas fa-upload"></i>
+                </div>
+            </div>
+            <h1>Painel do Administrador</h1>
+            <div class="lista-alunos" id="listaAlunos"></div>
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" multiple>
+                <button onclick="enviarArquivos()">Enviar Arquivos</button>
             </div>
         </div>
     </div>
 
-    <!-- Pop-up para Copiar ID -->
-    <div class="popup" id="popup">
-        <p>Seu ID de acesso: <span id="popupID"></span></p>
-        <p style="color: #dc3545; font-size: 0.9rem;">Guarde seu ID em local seguro!</p>
-        <button onclick="copiarID()">Copiar ID</button>
-        <button onclick="fecharPopup()">Fechar</button>
+    <!-- Pop-ups -->
+    <div class="popup" id="popupPrecos">
+        <div class="popup-content">
+            <h2>Planos</h2>
+            <p>Plano Mensal: R$ 299,00</p>
+            <button onclick="fecharPopup('popupPrecos')">Adquirir</button>
+            <button onclick="fecharPopup('popupPrecos')">Fechar</button>
+        </div>
+    </div>
+
+    <div class="popup" id="popupNotificacoes">
+        <div class="popup-content">
+            <h2>Notificações</h2>
+            <div id="notificacoesLista"></div>
+            <button onclick="fecharPopup('popupNotificacoes')">Fechar</button>
+        </div>
     </div>
 
     <!-- Rodapé -->
@@ -480,257 +138,6 @@
         <p>@Copyright 2025 - Plínio Studio</p>
     </footer>
 
-    <script>
-        // Função para gerar código único
-        function generateUniqueCode() {
-            return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        }
-
-        // Função para cadastrar aluno
-        function submitForm() {
-            const nome = document.getElementById('nome').value;
-            const idade = document.getElementById('idade').value;
-            const descricao = document.getElementById('descricao').value;
-
-            // Gerar código único
-            const uniqueCode = generateUniqueCode();
-
-            // Armazenar dados no localStorage
-            const formData = {
-                nome: nome,
-                idade: idade,
-                descricao: descricao,
-                dataMatricula: new Date().toLocaleDateString('pt-BR')
-            };
-            localStorage.setItem(uniqueCode, JSON.stringify(formData));
-
-            // Exibir pop-up com o ID de acesso
-            document.getElementById('popupID').textContent = uniqueCode;
-            document.getElementById('popup').style.display = 'block'; // Exibe o popup
-
-            // Enviar ID para o WhatsApp (oculto para o aluno)
-            const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
-            const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = url;
-            document.body.appendChild(iframe);
-
-            // Limpar formulário
-            document.getElementById('formCadastro').reset();
-
-            // Atualizar a lista de alunos no painel do administrador
-            carregarListaAlunos();
-
-            return false; // Evita o envio do formulário
-        }
-
-        // Função para copiar o ID
-        function copiarID() {
-            const id = document.getElementById('popupID').textContent;
-            navigator.clipboard.writeText(id).then(() => {
-                alert('ID copiado para a área de transferência!');
-            });
-        }
-
-        // Função para fechar o popup manualmente
-        function fecharPopup() {
-            document.getElementById('popup').style.display = 'none';
-        }
-
-        // Função para fazer login
-        function login() {
-            const loginID = document.getElementById('loginID').value.trim();
-            const formData = localStorage.getItem(loginID);
-
-            if (loginID === '1316') {
-                // Login do administrador
-                document.getElementById('cadastroArea').style.display = 'none';
-                document.getElementById('loginArea').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'block';
-                carregarListaAlunos();
-            } else if (formData) {
-                // Login do aluno
-                const data = JSON.parse(formData);
-                document.getElementById('dashboardNome').textContent = data.nome;
-                document.getElementById('dataMatricula').textContent = data.dataMatricula;
-                document.getElementById('cadastroArea').style.display = 'none';
-                document.getElementById('loginArea').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-
-                // Renderizar gráfico de mensalidades
-                renderizarGraficoMensalidades(data.dataMatricula);
-            } else {
-                alert('ID de acesso inválido!');
-            }
-        }
-
-        // Função para carregar lista de alunos no painel do administrador
-        function carregarListaAlunos() {
-            const listaAlunos = document.getElementById('listaAlunos');
-            listaAlunos.innerHTML = '';
-
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('ALUNO-')) {
-                    const aluno = JSON.parse(localStorage.getItem(key));
-                    const alunoItem = document.createElement('div');
-                    alunoItem.className = 'aluno-item';
-                    alunoItem.innerHTML = `
-                        <span>${aluno.nome} (ID: ${key})</span>
-                        <span class="contagem-regressiva">${calcularDiasRestantes(aluno.dataMatricula)} dias restantes</span>
-                        <div class="status ${calcularStatusPagamento(aluno.dataMatricula) ? 'ativo' : 'inadimplente'}"></div>
-                    `;
-                    alunoItem.onclick = () => abrirDashboardAluno(key);
-                    listaAlunos.appendChild(alunoItem);
-                }
-            }
-        }
-
-        // Função para calcular dias restantes para o vencimento
-        function calcularDiasRestantes(dataMatricula) {
-            const hoje = new Date();
-            const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-            const diffTime = Math.abs(hoje - dataMatriculaObj);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return 30 - diffDays;
-        }
-
-        // Função para calcular status de pagamento
-        function calcularStatusPagamento(dataMatricula) {
-            const hoje = new Date();
-            const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-            const diffTime = Math.abs(hoje - dataMatriculaObj);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays <= 30;
-        }
-
-        // Função para abrir dashboard do aluno
-        function abrirDashboardAluno(id) {
-            const aluno = JSON.parse(localStorage.getItem(id));
-            document.getElementById('dashboardNome').textContent = aluno.nome;
-            document.getElementById('dataMatricula').textContent = aluno.dataMatricula;
-            document.getElementById('cadastroArea').style.display = 'none';
-            document.getElementById('loginArea').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('adminDashboard').style.display = 'none';
-
-            // Renderizar gráfico de mensalidades
-            renderizarGraficoMensalidades(aluno.dataMatricula);
-        }
-
-        // Função para renderizar gráfico de mensalidades
-        function renderizarGraficoMensalidades(dataMatricula) {
-            const ctx = document.getElementById('graficoMensalidades').getContext('2d');
-            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-            const mesMatricula = dataMatriculaObj.getMonth();
-            const anoMatricula = dataMatriculaObj.getFullYear();
-            const hoje = new Date();
-            const statusMesAtual = calcularStatusMesAtual(dataMatricula);
-
-            const dados = meses.map((mes, index) => {
-                if (index < mesMatricula) {
-                    return null; // Meses antes da matrícula
-                } else if (index === mesMatricula) {
-                    if (statusMesAtual === -1) {
-                        return '#dc3545'; // Inadimplente
-                    } else {
-                        const verde = Math.floor(255 * statusMesAtual);
-                        return `rgba(40, 167, 69, ${statusMesAtual})`; // Gradiente de verde
-                    }
-                } else {
-                    return '#ffc107'; // Meses futuros em amarelo
-                }
-            });
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: meses,
-                    datasets: [{
-                        label: '',
-                        data: dados.map((cor, index) => cor ? 1 : null),
-                        backgroundColor: dados,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuad'
-                    }
-                }
-            });
-        }
-
-        // Função para calcular o status do mês atual
-        function calcularStatusMesAtual(dataMatricula) {
-            const hoje = new Date();
-            const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-            const diffTime = Math.abs(hoje - dataMatriculaObj);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays <= 30) {
-                return (30 - diffDays) / 30; // Retorna a porcentagem de dias restantes
-            } else {
-                return -1; // Mês inadimplente
-            }
-        }
-
-        // Função para gerar boleto
-        function gerarBoleto() {
-            alert('Boleto gerado com sucesso!');
-        }
-
-        // Funções para as opções do dashboard
-        function acessarCurso(curso) {
-            alert(`Acessando curso de ${curso}`);
-        }
-
-        function acessarBancoQuestoes() {
-            alert('Acessando Banco de Questões');
-        }
-
-        function acessarBiblioteca() {
-            alert('Acessando Biblioteca de Aulas');
-        }
-
-        function acessarGrupoTurma() {
-            alert('Acessando Grupo da Turma');
-        }
-
-        // Função para acessar a lista de alunos
-        function acessarAlunos() {
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-            carregarListaAlunos();
-        }
-
-        // Função para voltar à área de cadastro
-        function voltarParaCadastro() {
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('cadastroArea').style.display = 'block';
-            document.getElementById('loginArea').style.display = 'block';
-        }
-
-        // Função para logout
-        function logout() {
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('cadastroArea').style.display = 'block';
-            document.getElementById('loginArea').style.display = 'block';
-            document.getElementById('loginID').value = '';
-            alert('Você saiu do sistema.');
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
