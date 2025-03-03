@@ -1,8 +1,0 @@
-/plataforma-de-cursos
-│
-├── index.html
-├── styles.css
-├── script.js
-└── assets/
-    ├── images/ (para imagens, como ícones, logos, etc.)
-    └── uploads/ (para arquivos enviados pelo administrador)
