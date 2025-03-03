@@ -229,8 +229,7 @@ function acessarGrupoTurma() {
 // Função para acessar a lista de alunos
 function acessarAlunos() {
     document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('adminDashboard').style.display = 'block';
-    carregarListaAlunos();
+    document.getElementById('chat').style.display = 'block';
 }
 
 // Função para voltar à área de cadastro
@@ -249,65 +248,100 @@ function logout() {
     alert('Você saiu do sistema.');
 }
 
-// Função para alternar o menu hamburger
+// Função para logout do administrador
+function logoutAdmin() {
+    document.getElementById('adminDashboard').style.display = 'none';
+    document.getElementById('cadastroArea').style.display = 'block';
+    document.getElementById('loginArea').style.display = 'block';
+    document.getElementById('loginID').value = '';
+    alert('Você saiu do sistema.');
+}
+
+// Função para abrir o menu lateral
 function toggleMenu() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.left = sidebar.style.left === '0px' ? '-250px' : '0px';
+    const menuLateral = document.getElementById('menuLateral');
+    menuLateral.style.left = menuLateral.style.left === '0px' ? '-250px' : '0px';
 }
 
-// Função para exibir seções do menu
-function showSection(sectionId) {
-    const sections = ['quem-somos', 'precos', 'politica'];
-    sections.forEach(id => {
-        document.getElementById(id).style.display = id === sectionId ? 'block' : 'none';
-    });
-}
-
-// Função para abrir o pop-up de preços
-function abrirPrecos() {
+// Função para mostrar popup de preços
+function mostrarPopupPrecos() {
     document.getElementById('popupPrecos').style.display = 'block';
 }
 
-// Função para fechar pop-ups
-function fecharPopup(id) {
-    document.getElementById(id).style.display = 'none';
+// Função para fechar popup de preços
+function fecharPopupPrecos() {
+    document.getElementById('popupPrecos').style.display = 'none';
 }
 
-// Função para abrir notificações
-function abrirNotificacoes() {
-    const notificacoesLista = document.getElementById('notificacoesLista');
-    notificacoesLista.innerHTML = '<p>Nenhuma notificação nova.</p>';
-    document.getElementById('popupNotificacoes').style.display = 'block';
+// Função para abrir a página de downloads
+function abrirDownloads() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('downloads').style.display = 'block';
+    carregarDownloads();
 }
 
-// Função para enviar arquivos
-function enviarArquivos() {
-    const fileInput = document.getElementById('fileInput');
-    const files = fileInput.files;
-    if (files.length > 0) {
-        const notificacaoBadge = document.getElementById('notificacaoBadge');
-        notificacaoBadge.textContent = parseInt(notificacaoBadge.textContent) + files.length;
-        alert(`${files.length} arquivo(s) enviado(s) com sucesso!`);
-        fileInput.value = '';
+// Função para carregar downloads
+function carregarDownloads() {
+    const listaDownloads = document.getElementById('listaDownloads');
+    listaDownloads.innerHTML = '';
+    const downloads = JSON.parse(localStorage.getItem('downloads')) || [];
+    downloads.forEach((arquivo, index) => {
+        const item = document.createElement('div');
+        item.className = 'aluno-item';
+        item.innerHTML = `
+            <span>${arquivo.nome}</span>
+            <button onclick="baixarArquivo(${index})">Baixar</button>
+        `;
+        listaDownloads.appendChild(item);
+    });
+}
+
+// Função para baixar arquivo
+function baixarArquivo(index) {
+    const downloads = JSON.parse(localStorage.getItem('downloads')) || [];
+    const arquivo = downloads[index];
+    const link = document.createElement('a');
+    link.href = arquivo.url;
+    link.download = arquivo.nome;
+    link.click();
+}
+
+// Função para voltar ao dashboard
+function voltarDashboard() {
+    document.getElementById('downloads').style.display = 'none';
+    document.getElementById('chat').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+}
+
+// Função para enviar mensagem no chat
+function enviarMensagem() {
+    const mensagemInput = document.getElementById('mensagemInput');
+    const mensagem = mensagemInput.value.trim();
+    if (mensagem) {
+        const mensagensChat = document.getElementById('mensagensChat');
+        const novaMensagem = document.createElement('div');
+        novaMensagem.textContent = mensagem;
+        mensagensChat.appendChild(novaMensagem);
+        mensagemInput.value = '';
+        mensagensChat.scrollTop = mensagensChat.scrollHeight;
     }
 }
 
-// Função para carregar arquivos na área de downloads
-function carregarArquivos() {
-    const arquivos = [
-        { nome: 'Aula 1 - Introdução.pdf', link: '#' },
-        { nome: 'Exercícios de Matemática.docx', link: '#' },
-    ];
-    const arquivosDiv = document.getElementById('arquivos');
-    arquivosDiv.innerHTML = arquivos.map(arquivo => `
-        <div class="arquivo-item">
-            <span>${arquivo.nome}</span>
-            <button onclick="window.open('${arquivo.link}', '_blank')">Baixar</button>
-        </div>
-    `).join('');
+// Função para upload de arquivos
+function uploadFiles() {
+    const files = document.getElementById('uploadFile').files;
+    const downloads = JSON.parse(localStorage.getItem('downloads')) || [];
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            downloads.push({
+                nome: file.name,
+                url: e.target.result
+            });
+            localStorage.setItem('downloads', JSON.stringify(downloads));
+        };
+        reader.readAsDataURL(file);
+    }
+    alert('Arquivos enviados com sucesso!');
 }
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-    carregarArquivos();
-});
