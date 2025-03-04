@@ -48,3 +48,23 @@ function mostrarPopupPrecos() {
 function fecharPopupPrecos() {
     document.getElementById("popupPrecos").style.display = "none";
 }
+
+// Função para alternar o menu lateral
+function toggleMenu() {
+    const menuLateral = document.getElementById("menuLateral");
+    if (menuLateral.style.left === "-250px") {
+        menuLateral.style.left = "0";
+    } else {
+        menuLateral.style.left = "-250px";
+    }
+}
+
+// Função para gerar boleto
+function gerarBoleto() {
+    alert("Boleto gerado com sucesso!");
+}
+
+// Função para abrir a área de downloads
+function abrirDownloads() {
+    alert("Área de downloads em construção!");
+}
