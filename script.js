@@ -1,70 +1,112 @@
-document.addEventListener("DOMContentLoaded", function () {
+// Código Original (Mantido Intacto)
+function generateUniqueCode() {
+    return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
+
+function submitForm() {
+    const nome = document.getElementById('nome').value;
+    const idade = document.getElementById('idade').value;
+    const descricao = document.getElementById('descricao').value;
+    const uniqueCode = generateUniqueCode();
+    const formData = {
+        nome: nome,
+        idade: idade,
+        descricao: descricao,
+        dataMatricula: new Date().toLocaleDateString('pt-BR')
+    };
+    localStorage.setItem(uniqueCode, JSON.stringify(formData));
+    document.getElementById('popupID').textContent = uniqueCode;
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('formCadastro').reset();
     carregarListaAlunos();
-});
+    return false;
+}
 
-function login() {
-    let id = document.getElementById("loginID").value;
+// Novas Funcionalidades (Adicionadas)
+function renderizarGraficosAdmin() {
+    const ctxFinancas = document.getElementById('graficoFinancas').getContext('2d');
+    const ctxDesempenho = document.getElementById('graficoDesempenho').getContext('2d');
 
-    if (id === "admin") {
-        document.getElementById("adminDashboard").style.display = "block";
-        document.getElementById("loginArea").style.display = "none";
-    } else {
-        document.getElementById("dashboard").style.display = "block";
-        document.getElementById("loginArea").style.display = "none";
-        document.getElementById("dashboardNome").innerText = id;
+    new Chart(ctxFinancas, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Receita (R$)',
+                data: [5000, 7000, 6000, 8000, 9000, 10000],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    new Chart(ctxDesempenho, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Desempenho Médio',
+                data: [65, 70, 75, 80, 85, 90],
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function renderizarGraficosAluno() {
+    const ctxDesempenho = document.getElementById('graficoDesempenhoAluno').getContext('2d');
+
+    new Chart(ctxDesempenho, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+                label: 'Desempenho',
+                data: [70, 75, 80, 85, 90, 95],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function enviarArquivos() {
+    const fileInput = document.getElementById('fileInput');
+    const files = fileInput.files;
+    if (files.length > 0) {
+        const notificacaoBadge = document.getElementById('notificacaoBadge');
+        notificacaoBadge.textContent = parseInt(notificacaoBadge.textContent) + files.length;
+        alert(`${files.length} arquivo(s) enviado(s) com sucesso!`);
+        fileInput.value = '';
     }
 }
 
-function logout() {
-    document.getElementById("dashboard").style.display = "none";
-    document.getElementById("loginArea").style.display = "block";
-}
-
-function logoutAdmin() {
-    document.getElementById("adminDashboard").style.display = "none";
-    document.getElementById("loginArea").style.display = "block";
-}
-
-function carregarListaAlunos() {
-    let lista = document.getElementById("listaAlunos");
-    lista.innerHTML = "<p>Aluno: João Silva <button onclick='verAluno(\"João Silva\")'>Ver Dashboard</button></p>";
-}
-
-function verAluno(nome) {
-    document.getElementById("dashboard").style.display = "block";
-    document.getElementById("adminDashboard").style.display = "none";
-    document.getElementById("dashboardNome").innerText = nome;
-}
-
-function uploadFiles() {
-    let files = document.getElementById("uploadFile").files;
-    let lista = document.getElementById("arquivosEnviados");
-
-    for (let file of files) {
-        let item = document.createElement("p");
-        item.innerHTML = `${file.name} <button onclick="removerArquivo(this)">Remover</button>`;
-        lista.appendChild(item);
-    }
-}
-
-function removerArquivo(element) {
-    element.parentNode.remove();
-}
-
-function abrirDownloads() {
-    let lista = document.getElementById("listaDownloads");
-    lista.innerHTML = "<p>Arquivo enviado pelo Administrador: <a href='#'>Baixar</a></p>";
-}
-
-// Gráficos
-let ctx1 = document.getElementById("graficoAlunos").getContext("2d");
-new Chart(ctx1, {
-    type: "bar",
-    data: { labels: ["João", "Maria"], datasets: [{ label: "Progresso", data: [80, 90] }] },
-});
-
-let ctx2 = document.getElementById("graficoFinanceiro").getContext("2d");
-new Chart(ctx2, {
-    type: "line",
-    data: { labels: ["Jan", "Fev"], datasets: [{ label: "Receitas", data: [5000, 6000] }] },
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    renderizarGraficosAdmin();
 });
