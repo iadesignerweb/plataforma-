@@ -1,34 +1,4 @@
-/* Código Original (Mantido Intacto) */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    flex-direction: column;
-}
-
-.container {
-    max-width: 1200px;
-    width: 100%;
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    animation: fadeIn 1s ease-in-out;
-    flex: 1;
-}
-
-/* Novos Estilos (Adicionados) */
+/* Estilos para a imagem no topo da página de login */
 .header-image {
     width: 100%;
     max-width: 800px;
@@ -37,6 +7,7 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilos para gráficos */
 .grafico-container {
     background: rgba(255, 255, 255, 0.1);
     padding: 20px;
@@ -50,6 +21,7 @@ body {
     color: #007bff;
 }
 
+/* Estilos para a área de upload no painel do administrador */
 .upload-area {
     margin-top: 20px;
     padding: 20px;
@@ -86,6 +58,7 @@ body {
     background-color: #218838;
 }
 
+/* Estilos para notificações no dashboard do aluno */
 .notificacao {
     position: relative;
     cursor: pointer;
@@ -102,6 +75,7 @@ body {
     font-size: 0.8rem;
 }
 
+/* Ajustes para dispositivos móveis */
 @media (max-width: 768px) {
     .grafico-container {
         padding: 15px;
