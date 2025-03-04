@@ -1,164 +1,248 @@
-<!DOCTYPE html>  <html lang="pt-br">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Plataforma de Cursos</title>  
-    <link rel="stylesheet" href="styles.css">  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">  
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
-</head>  
-<body>  
-    <div class="container">  
-        <!-- Menu Hamburger -->  
-        <div class="menu-hamburger" onclick="toggleMenu()">  
-            <i class="fas fa-bars"></i>  
-        </div>  
-        <div class="menu-lateral" id="menuLateral">  
-            <a href="#" onclick="mostrarPopupPrecos()">Preços</a>  
-            <a href="#">Quem Somos</a>  
-            <a href="#">Política de Privacidade</a>  
-        </div>  <!-- Cabeçalho -->  
-    <header>  
-        <h1>Plataforma de Cursos</h1>  
-        <p>Seu portal para o conhecimento</p>  
-    </header>  
+// Função para gerar código único
+function generateUniqueCode() {
+    return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+}
 
-    <!-- Conteúdo Principal -->  
-    <div class="main-content">  
-        <!-- Área de Cadastro -->  
-        <div class="form-container" id="cadastroArea">  
-            <h2>Cadastro de Aluno</h2>  
-            <form id="formCadastro" onsubmit="return submitForm()">  
-                <input type="text" id="nome" placeholder="Digite seu nome" required>  
-                <input type="number" id="idade" placeholder="Digite sua idade" required>  
-                <textarea id="descricao" placeholder="Descreva-se brevemente..." required></textarea>  
-                <button type="submit">Cadastrar</button>  
-            </form>  
-        </div>  
+// Função para cadastrar aluno
+function submitForm() {
+    const nome = document.getElementById('nome').value;
+    const idade = document.getElementById('idade').value;
+    const descricao = document.getElementById('descricao').value;
 
-        <!-- Área de Login -->  
-        <div class="form-container" id="loginArea">  
-            <h2>Login do Aluno</h2>  
-            <input type="text" id="loginID" placeholder="Digite seu ID de acesso">  
-            <button onclick="login()">Entrar</button>  
-        </div>  
+    // Gerar código único
+    const uniqueCode = generateUniqueCode();
 
-        <!-- Dashboard do Aluno -->  
-        <div class="dashboard" id="dashboard">  
-            <!-- Menu Superior -->  
-            <div class="menu-superior">  
-                <a href="#" onclick="voltarParaCadastro()">Área de Cadastro</a>  
-                <a href="#" onclick="logout()">Logout</a>  
-                <i class="fas fa-bell" onclick="abrirDownloads()"></i>  
-            </div>  
+    // Armazenar dados no localStorage
+    const formData = {
+        nome: nome,
+        idade: idade,
+        descricao: descricao,
+        dataMatricula: new Date().toLocaleDateString('pt-BR'),
+        bloqueado: false // Status de bloqueio
+    };
+    localStorage.setItem(uniqueCode, JSON.stringify(formData));
 
-            <!-- Conteúdo do Dashboard -->  
-            <div class="dashboard-content">  
-                <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>  
-                <div class="dashboard-options">  
-                    <div class="option" onclick="acessarCurso('Física')">  
-                        <i class="fas fa-atom"></i>  
-                        <p>Lições de Física</p>  
-                    </div>  
-                    <div class="option" onclick="acessarCurso('Matemática')">  
-                        <i class="fas fa-calculator"></i>  
-                        <p>Lições de Matemática</p>  
-                    </div>  
-                    <div class="option" onclick="acessarBancoQuestoes()">  
-                        <i class="fas fa-book"></i>  
-                        <p>Banco de Questões</p>  
-                    </div>  
-                    <div class="option" onclick="acessarBiblioteca()">  
-                        <i class="fas fa-book-open"></i>  
-                        <p>Biblioteca de Aulas</p>  
-                    </div>  
-                    <div class="option" onclick="acessarGrupoTurma()">  
-                        <i class="fas fa-users"></i>  
-                        <p>Grupo da Turma</p>  
-                    </div>  
-                    <div class="option" onclick="acessarAlunos()">  
-                        <i class="fas fa-user-graduate"></i>  
-                        <p>Alunos</p>  
-                    </div>  
-                </div>  
+    // Exibir pop-up com o ID de acesso
+    document.getElementById('popupID').textContent = uniqueCode;
+    document.getElementById('popup').style.display = 'block';
 
-                <!-- Painel Gráfico -->  
-                <div class="painel-grafico">  
-                    <h2>Painel do Aluno</h2>  
-                    <div class="status-pagamento">  
-                        <span>Data da Matrícula: <strong id="dataMatricula">01/05/2025</strong></span>  
-                        <span>Status: <span class="ativo">● Ativo</span></span>  
-                    </div>  
-                    <div class="grafico-mensalidades">  
-                        <canvas id="graficoMensalidades"></canvas>  
-                    </div>  
-                    <div class="gerar-boleto">  
-                        <button onclick="gerarBoleto()">Gerar Boleto</button>  
-                    </div>  
-                </div>  
+    // Limpar formulário
+    document.getElementById('formCadastro').reset();
 
-                <!-- Vídeo Incorporado -->  
-                <div class="video-container">  
-                    <iframe src="https://www.youtube.com/embed/PGw2LhOak2s?si=AmUj5Ak_xFFHMyw_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
-                </div>  
-            </div>  
-        </div>  
+    // Atualizar a lista de alunos no painel do administrador
+    carregarListaAlunos();
 
-        <!-- Dashboard do Administrador -->  
-        <div class="admin-dashboard" id="adminDashboard">  
-            <h1>Painel do Administrador</h1>  
-            <button onclick="logoutAdmin()">Logout</button>  
-            <input type="file" id="uploadFile" multiple onchange="uploadFiles()">  
-            <div class="lista-alunos" id="listaAlunos">  
-                <!-- Lista de alunos será preenchida dinamicamente -->  
-            </div>  
-            <div class="graficos-admin">  
-                <canvas id="graficoAlunos"></canvas>  
-                <canvas id="graficoStatusPagamento"></canvas>  
-                <canvas id="graficoIdadeAlunos"></canvas>  
-            </div>  
-        </div>  
+    return false; // Evita o envio do formulário
+}
 
-        <!-- Página de Downloads -->  
-        <div class="downloads" id="downloads">  
-            <h1>Downloads</h1>  
-            <div id="listaDownloads"></div>  
-            <button onclick="voltarDashboard()">Voltar</button>  
-        </div>  
+// Função para copiar o ID
+function copiarID() {
+    const id = document.getElementById('popupID').textContent;
+    navigator.clipboard.writeText(id).then(() => {
+        alert('ID copiado para a área de transferência!');
+    });
+}
 
-        <!-- Chat -->  
-        <div class="chat" id="chat">  
-            <h1>Chat</h1>  
-            <div id="mensagensChat"></div>  
-            <input type="text" id="mensagemInput" placeholder="Digite sua mensagem">  
-            <button onclick="enviarMensagem()">Enviar</button>  
-            <button onclick="voltarDashboard()">Voltar</button>  
-        </div>  
-    </div>  
-</div>  
+// Função para fechar o popup manualmente
+function fecharPopup() {
+    document.getElementById('popup').style.display = 'none';
+}
 
-<!-- Pop-up para Copiar ID -->  
-<div class="popup" id="popup">  
-    <p>Seu ID de acesso: <span id="popupID"></span></p>  
-    <p style="color: #dc3545; font-size: 0.9rem;">Guarde seu ID em local seguro!</p>  
-    <button onclick="copiarID()">Copiar ID</button>  
-    <button onclick="fecharPopup()">Fechar</button>  
-</div>  
+// Função para fazer login
+function login() {
+    const loginID = document.getElementById('loginID').value.trim();
+    const formData = localStorage.getItem(loginID);
 
-<!-- Pop-up de Preços -->  
-<div class="popup-precos" id="popupPrecos">  
-    <p>Valor do Plano Mensal: R$ 299,00</p>  
-    <p>Para Adquirir a Plataforma, Entre em Contato</p>  
-    <button onclick="fecharPopupPrecos()">Fechar</button>  
-</div>  
+    if (loginID === '1316') {
+        // Login do administrador
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        carregarListaAlunos();
+    } else if (formData) {
+        const data = JSON.parse(formData);
+        if (data.bloqueado) {
+            alert('Este aluno está bloqueado!');
+            return;
+        }
+        // Login do aluno
+        document.getElementById('dashboardNome').textContent = data.nome;
+        document.getElementById('dataMatricula').textContent = data.dataMatricula;
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
 
-<!-- Rodapé -->  
-<footer>  
-    <p>@Copyright 2025 - Plínio Studio</p>  
-    <a href="https://wa.me/5587999786261" target="_blank"><i class="fab fa-whatsapp"></i></a>  
-</footer>  
+        // Renderizar gráfico de mensalidades
+        renderizarGraficoMensalidades(data.dataMatricula);
+    } else {
+        alert('ID de acesso inválido!');
+    }
+}
 
-<script src="script.js"></script>
+// Função para carregar lista de alunos no painel do administrador
+function carregarListaAlunos() {
+    const listaAlunos = document.getElementById('listaAlunos');
+    listaAlunos.innerHTML = '';
 
-</body>  
-    </html>
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('ALUNO-')) {
+            const aluno = JSON.parse(localStorage.getItem(key));
+            const alunoItem = document.createElement('div');
+            alunoItem.className = 'aluno-item';
+            alunoItem.innerHTML = `
+                <span>${aluno.nome} (ID: ${key})</span>
+                <span class="contagem-regressiva">${calcularDiasRestantes(aluno.dataMatricula)} dias restantes</span>
+                <div class="status ${calcularStatusPagamento(aluno.dataMatricula) ? 'ativo' : 'inadimplente'}"></div>
+                <button onclick="bloquearAluno('${key}')">${aluno.bloqueado ? 'Desbloquear' : 'Bloquear'}</button>
+                <button onclick="removerAluno('${key}')">Remover</button>
+            `;
+            listaAlunos.appendChild(alunoItem);
+        }
+    }
+}
+
+// Função para bloquear/desbloquear aluno
+function bloquearAluno(id) {
+    const aluno = JSON.parse(localStorage.getItem(id));
+    aluno.bloqueado = !aluno.bloqueado;
+    localStorage.setItem(id, JSON.stringify(aluno));
+    carregarListaAlunos();
+}
+
+// Função para remover aluno
+function removerAluno(id) {
+    localStorage.removeItem(id);
+    carregarListaAlunos();
+}
+
+// Função para calcular dias restantes para o vencimento
+function calcularDiasRestantes(dataMatricula) {
+    const hoje = new Date();
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const diffTime = Math.abs(hoje - dataMatriculaObj);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return 30 - diffDays;
+}
+
+// Função para calcular status de pagamento
+function calcularStatusPagamento(dataMatricula) {
+    const hoje = new Date();
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const diffTime = Math.abs(hoje - dataMatriculaObj);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 30;
+}
+
+// Função para renderizar gráfico de mensalidades
+function renderizarGraficoMensalidades(dataMatricula) {
+    const ctx = document.getElementById('graficoMensalidades').getContext('2d');
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const mesMatricula = dataMatriculaObj.getMonth();
+    const anoMatricula = dataMatriculaObj.getFullYear();
+    const hoje = new Date();
+    const statusMesAtual = calcularStatusMesAtual(dataMatricula);
+
+    const dados = meses.map((mes, index) => {
+        if (index < mesMatricula) {
+            return null; // Meses antes da matrícula
+        } else if (index === mesMatricula) {
+            if (statusMesAtual === -1) {
+                return '#dc3545'; // Inadimplente
+            } else {
+                const verde = Math.floor(255 * statusMesAtual);
+                return `rgba(40, 167, 69, ${statusMesAtual})`; // Gradiente de verde
+            }
+        } else {
+            return '#ffc107'; // Meses futuros em amarelo
+        }
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: meses,
+            datasets: [{
+                label: '',
+                data: dados.map((cor, index) => cor ? 1 : null),
+                backgroundColor: dados,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuad'
+            }
+        }
+    });
+}
+
+// Função para calcular o status do mês atual
+function calcularStatusMesAtual(dataMatricula) {
+    const hoje = new Date();
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const diffTime = Math.abs(hoje - dataMatriculaObj);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 30) {
+        return (30 - diffDays) / 30; // Retorna a porcentagem de dias restantes
+    } else {
+        return -1; // Mês inadimplente
+    }
+}
+
+// Função para gerar boleto
+function gerarBoleto() {
+    alert('Boleto gerado com sucesso!');
+}
+
+// Funções para as opções do dashboard
+function acessarCurso(curso) {
+    alert(`Acessando curso de ${curso}`);
+}
+
+function acessarBancoQuestoes() {
+    alert('Acessando Banco de Questões');
+}
+
+function acessarBiblioteca() {
+    alert('Acessando Biblioteca de Aulas');
+}
+
+function acessarGrupoTurma() {
+    alert('Acessando Grupo da Turma');
+}
+
+// Função para acessar a lista de alunos
+function acessarAlunos() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('adminDashboard').style.display = 'block';
+    carregarListaAlunos();
+}
+
+// Função para voltar à área de cadastro
+function voltarParaCadastro() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('cadastroArea').style.display = 'block';
+    document.getElementById('loginArea').style.display = 'block';
+}
+
+// Função para logout
+function logout() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('cadastroArea').style.display = 'block';
+    document.getElementById('loginArea').style.display = 'block';
+    document.getElementById('loginID').value = '';
+    alert('Você saiu do sistema.');
+}
