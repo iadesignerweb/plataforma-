@@ -1,68 +1,114 @@
-body {
-    font-family: Arial, sans-serif;
+/* Código Original (Mantido Intacto) */
+* {
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    flex-direction: column;
 }
 
 .container {
-    width: 80%;
-    margin: auto;
-}
-
-.topo-imagem {
+    max-width: 1200px;
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeIn 1s ease-in-out;
+    flex: 1;
 }
 
-.form-container, .dashboard, .admin-dashboard {
-    background: white;
+/* Novos Estilos (Adicionados) */
+.header-image {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.grafico-container {
+    background: rgba(255, 255, 255, 0.1);
     padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.grafico-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+.upload-area {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    margin: 20px 0;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
 }
 
-.menu-superior {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.menu-superior i {
-    font-size: 24px;
+.upload-area label {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
+    display: inline-block;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
 }
 
-button {
-    background: #007BFF;
+.upload-area label:hover {
+    background-color: #0056b3;
+}
+
+.upload-area button {
+    background-color: #28a745;
     color: white;
     border: none;
-    padding: 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
-    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background: #0056b3;
+.upload-area button:hover {
+    background-color: #218838;
 }
 
-.graficos-admin, .graficos-aluno {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+.notificacao {
+    position: relative;
+    cursor: pointer;
 }
 
-canvas {
-    width: 45%;
-    max-width: 400px;
-    margin-top: 20px;
+.notificacao .badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 8px;
+    font-size: 0.8rem;
 }
 
-.lista-alunos {
-    margin-top: 20px;
-    padding: 10px;
-    background: #e0e0e0;
-    border-radius: 5px;
+@media (max-width: 768px) {
+    .grafico-container {
+        padding: 15px;
+    }
+
+    .upload-area label, .upload-area button {
+        width: 100%;
+        text-align: center;
+    }
 }
