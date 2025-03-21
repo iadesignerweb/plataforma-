@@ -90,6 +90,12 @@
                             <button onclick="gerarBoleto()">Gerar Boleto</button>
                         </div>
                     </div>
+
+                    <!-- Notificações -->
+                    <div class="notificacoes-aluno">
+                        <h3>Notificações</h3>
+                        <div id="listaNotificacoes"></div>
+                    </div>
                 </div>
             </div>
 
@@ -98,6 +104,11 @@
                 <h1>Painel do Administrador</h1>
                 <div class="lista-alunos" id="listaAlunos">
                     <!-- Lista de alunos será preenchida dinamicamente -->
+                </div>
+                <div class="upload-area">
+                    <input type="file" id="arquivo" accept=".pdf,.docx">
+                    <button onclick="uploadArquivo()">Enviar para Aluno</button>
+                    <span id="statusUpload"></span>
                 </div>
             </div>
         </div>
