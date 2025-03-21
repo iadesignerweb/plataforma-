@@ -4,215 +4,206 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma de Cursos</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <!-- Estilos -->
     <style>
-        /* CSS embutido */
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: #f8f9fa;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            flex-direction: column;
-        }
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            animation: fadeIn 1s ease-in-out;
-            flex: 1;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh;
         }
         header {
             background-color: #007bff;
-            color: white;
-            padding: 30px;
-            text-align: center;
+            color: white; padding: 20px;
+            width: 100%; text-align: center;
         }
-        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        header p { font-size: 1.2rem; }
-        .buttons button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 1em;
-            border: none;
-            background-color: white;
-            color: #007bff;
-            cursor: pointer;
+        .container { width: 90%; max-width: 1000px; margin-top: 20px; }
+        .form-container, .dashboard, .admin-dashboard {
+            display: none; background: white;
+            padding: 20px; border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
-        .main-content { display: flex; flex-direction: column; align-items: center; padding: 30px; }
-        .form-container { width: 100%; max-width: 400px; margin-bottom: 20px; }
-        .form-container h2 { font-size: 1.8rem; margin-bottom: 20px; color: #007bff; text-align: center; }
         input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        textarea { resize: vertical; height: 100px; }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .dashboard, .admin-dashboard { display: none; width: 100%; padding: 30px; }
-        .menu-superior {
-            display: flex;
-            justify-content: space-between;
-            background-color: #007bff;
-            padding: 15px 30px;
-            color: white;
-        }
-        .menu-superior a { color: white; text-decoration: none; }
-        .dashboard-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
-        .option {
-            background-color: #f1f3f5;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .option i { font-size: 2rem; color: #007bff; }
-        .admin-dashboard h1 { color: #007bff; }
-        .lista-alunos { display: flex; flex-direction: column; gap: 10px; }
-        .aluno-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f1f3f5;
-            padding: 10px;
+            width: 100%; padding: 10px;
+            margin: 10px 0; border: 1px solid #ccc;
             border-radius: 5px;
         }
-        footer { text-align: center; padding: 20px; background-color: #007bff; color: white; width: 100%; }
+        button {
+            background-color: #007bff; color: white;
+            padding: 10px 20px; border: none;
+            border-radius: 5px; cursor: pointer;
+        }
+        .dashboard-options, .lista-alunos { margin-top: 20px; }
+        .option, .aluno-item {
+            background: #f1f3f5; padding: 10px;
+            margin: 10px 0; border-radius: 5px;
+            display: flex; justify-content: space-between;
+            align-items: center;
+        }
+        .status { padding: 3px 10px; border-radius: 10px; }
+        .ativo { background-color: #28a745; color: white; }
+        .bloqueado { background-color: #dc3545; color: white; }
     </style>
 </head>
 <body>
 
+    <header>
+        <h1>Plataforma de Cursos</h1>
+        <p>Cadastre-se ou faça login para acessar!</p>
+        <button onclick="mostrarCadastro()">Cadastro</button>
+        <button onclick="mostrarLogin()">Login</button>
+    </header>
+
     <div class="container">
-        <header>
-            <h1>Get Our Online Course Anywhere Anytime</h1>
-            <p>Delivering to 11 years is our latest experience.</p>
-            <div class="buttons">
-                <button onclick="mostrarCadastro()">Start Learning</button>
-                <button onclick="mostrarAdmin()">Start Teaching</button>
-            </div>
-        </header>
 
-        <div class="main-content">
-            <div class="form-container" id="cadastroArea">
-                <h2>Cadastro de Aluno</h2>
-                <form onsubmit="cadastrarAluno(event)">
-                    <input type="text" id="nome" placeholder="Nome" required>
-                    <input type="number" id="idade" placeholder="Idade" required>
-                    <textarea id="descricao" placeholder="Descreva-se..." required></textarea>
-                    <button type="submit">Cadastrar</button>
-                </form>
-            </div>
-
-            <div class="dashboard" id="dashboard">
-                <div class="menu-superior">
-                    <a href="#" onclick="logout()">Logout</a>
-                </div>
-                <div>
-                    <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>
-                    <p>Status: <span id="statusAluno" style="color:green">Ativo</span></p>
-                </div>
-            </div>
-
-            <div class="admin-dashboard" id="adminDashboard">
-                <h1>Painel do Administrador</h1>
-                <div class="lista-alunos" id="listaAlunos"></div>
-            </div>
+        <!-- Área de Cadastro -->
+        <div class="form-container" id="cadastroArea">
+            <h2>Cadastro de Aluno</h2>
+            <input type="text" id="nome" placeholder="Digite seu nome">
+            <input type="number" id="idade" placeholder="Digite sua idade">
+            <textarea id="descricao" placeholder="Fale sobre você"></textarea>
+            <button onclick="cadastrar()">Cadastrar</button>
         </div>
+
+        <!-- Área de Login -->
+        <div class="form-container" id="loginArea">
+            <h2>Login</h2>
+            <input type="text" id="loginID" placeholder="Digite seu ID">
+            <button onclick="login()">Entrar</button>
+        </div>
+
+        <!-- Dashboard Aluno -->
+        <div class="dashboard" id="dashboardAluno">
+            <h2>Bem-vindo(a), <span id="nomeAluno"></span></h2>
+            <div class="dashboard-options">
+                <div class="option">Lições de Física</div>
+                <div class="option">Lições de Matemática</div>
+                <div class="option">Banco de Questões</div>
+                <div class="option">Biblioteca de Aulas</div>
+            </div>
+            <button onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Dashboard Admin -->
+        <div class="admin-dashboard" id="dashboardAdmin">
+            <h2>Administração de Alunos</h2>
+            <div class="lista-alunos" id="listaAlunos">
+                <!-- Lista gerada dinamicamente -->
+            </div>
+            <button onclick="logout()">Sair</button>
+        </div>
+
     </div>
 
-    <footer><p>© 2025 - Plínio Studio</p></footer>
+    <!-- Pop-up com ID -->
+    <div class="form-container" id="popup" style="display:none;">
+        <h3>Seu ID:</h3>
+        <p id="popupID"></p>
+        <button onclick="fecharPopup()">Fechar</button>
+    </div>
 
     <script>
-        // Dados dos alunos
-        let alunos = [];
-        let alunoLogado = null;
+        let alunos = JSON.parse(localStorage.getItem('alunos')) || [];
 
         function mostrarCadastro() {
+            esconderTudo();
             document.getElementById('cadastroArea').style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'none';
         }
 
-        function mostrarAdmin() {
+        function mostrarLogin() {
+            esconderTudo();
+            document.getElementById('loginArea').style.display = 'block';
+        }
+
+        function esconderTudo() {
             document.getElementById('cadastroArea').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-            listarAlunos();
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('dashboardAluno').style.display = 'none';
+            document.getElementById('dashboardAdmin').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
         }
 
-        function cadastrarAluno(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value;
-            const idade = document.getElementById('idade').value;
-            const descricao = document.getElementById('descricao').value;
-            const id = Math.floor(Math.random() * 10000);
+        function cadastrar() {
+            const nome = document.getElementById('nome').value.trim();
+            const idade = document.getElementById('idade').value.trim();
+            const descricao = document.getElementById('descricao').value.trim();
 
-            alunos.push({ id, nome, idade, descricao, status: 'ativo' });
-            alert(`Aluno cadastrado! ID: ${id}`);
-            alunoLogado = id;
-            mostrarDashboard();
+            if (nome && idade && descricao) {
+                const id = 'ALUNO' + Math.floor(Math.random() * 10000);
+                alunos.push({ id, nome, idade, descricao, status: 'ativo' });
+                localStorage.setItem('alunos', JSON.stringify(alunos));
+
+                document.getElementById('popupID').innerText = id;
+                esconderTudo();
+                document.getElementById('popup').style.display = 'block';
+            } else {
+                alert('Preencha todos os campos!');
+            }
         }
 
-        function mostrarDashboard() {
-            const aluno = alunos.find(a => a.id === alunoLogado);
-            document.getElementById('dashboardNome').innerText = aluno.nome;
-            document.getElementById('statusAluno').innerText = aluno.status === 'ativo' ? 'Ativo' : 'Bloqueado';
-            document.getElementById('statusAluno').style.color = aluno.status === 'ativo' ? 'green' : 'red';
-            document.getElementById('cadastroArea').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
+        function fecharPopup() {
+            mostrarLogin();
+        }
+
+        function login() {
+            const loginID = document.getElementById('loginID').value.trim();
+
+            if (loginID === 'admin') {
+                // Admin
+                esconderTudo();
+                document.getElementById('dashboardAdmin').style.display = 'block';
+                carregarListaAlunos();
+            } else {
+                const aluno = alunos.find(a => a.id === loginID);
+                if (aluno) {
+                    if (aluno.status === 'bloqueado') {
+                        alert('Seu acesso está bloqueado.');
+                        return;
+                    }
+                    esconderTudo();
+                    document.getElementById('dashboardAluno').style.display = 'block';
+                    document.getElementById('nomeAluno').innerText = aluno.nome;
+                } else {
+                    alert('ID inválido!');
+                }
+            }
         }
 
         function logout() {
-            alunoLogado = null;
-            mostrarCadastro();
+            esconderTudo();
         }
 
-        function listarAlunos() {
+        function carregarListaAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '';
-            alunos.forEach(aluno => {
+
+            alunos.forEach((aluno, index) => {
                 const item = document.createElement('div');
                 item.className = 'aluno-item';
                 item.innerHTML = `
-                    <span>${aluno.nome} (ID: ${aluno.id}) - ${aluno.status}</span>
-                    <button onclick="toggleStatus(${aluno.id})">${aluno.status === 'ativo' ? 'Bloquear' : 'Desbloquear'}</button>
+                    <span>${aluno.nome} (${aluno.id})</span>
+                    <span class="status ${aluno.status === 'ativo' ? 'ativo' : 'bloqueado'}">
+                        ${aluno.status}
+                    </span>
+                    <button onclick="toggleStatus(${index})">
+                        ${aluno.status === 'ativo' ? 'Bloquear' : 'Desbloquear'}
+                    </button>
                 `;
                 lista.appendChild(item);
             });
         }
 
-        function toggleStatus(id) {
-            const aluno = alunos.find(a => a.id === id);
-            aluno.status = aluno.status === 'ativo' ? 'bloqueado' : 'ativo';
-            listarAlunos();
+        function toggleStatus(index) {
+            alunos[index].status = alunos[index].status === 'ativo' ? 'bloqueado' : 'ativo';
+            localStorage.setItem('alunos', JSON.stringify(alunos));
+            carregarListaAlunos();
         }
+
+        window.onload = () => {
+            mostrarLogin();
+        };
     </script>
 
 </body>
