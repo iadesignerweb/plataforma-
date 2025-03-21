@@ -1,71 +1,47 @@
-// Lógica para o upload de arquivos (Dashboard do Administrador)
+const users = [];
+let currentUser = null;
 const uploadedFiles = [];
-
-function uploadFiles() {
-    const fileInput = document.getElementById('file-upload');
-    const files = fileInput.files;
-    const fileList = document.getElementById('uploaded-files');
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        uploadedFiles.push(file);
-
-        const listItem = document.createElement('li');
-        listItem.textContent = file.name;
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remover';
-        removeButton.onclick = () => removeFile(i);
-
-        listItem.appendChild(removeButton);
-        fileList.appendChild(listItem);
-    }
-
-    alert('Arquivos enviados com sucesso!');
-    fileInput.value = ''; // Limpa o input de arquivo
-}
-
-function removeFile(index) {
-    uploadedFiles.splice(index, 1);
-    const fileList = document.getElementById('uploaded-files');
-    fileList.innerHTML = ''; // Limpa a lista
-
-    // Reexibe os arquivos restantes
-    uploadedFiles.forEach((file, i) => {
-        const listItem = document.createElement('li');
-        listItem.textContent = file.name;
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remover';
-        removeButton.onclick = () => removeFile(i);
-
-        listItem.appendChild(removeButton);
-        fileList.appendChild(listItem);
-    });
-}
-
-// Lógica para as notificações (Dashboard do Aluno)
 const notifications = [];
+const questions = [
+    { question: 'O que é HTML?', answer: 'Linguagem de Marcação de Hipertexto.' },
+    { question: 'O que é CSS?', answer: 'Folhas de Estilo em Cascata.' }
+];
+const classGroup = [
+    { user: 'João', message: 'Alguém pode me ajudar com a lição 3?' },
+    { user: 'Maria', message: 'Claro, João! Qual sua dúvida?' }
+];
 
-function toggleNotifications() {
-    const dropdown = document.getElementById('notification-dropdown');
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('login-form').style.display = 'block';
+    renderQuestionBank();
+    renderClassGroup();
+});
+
+function toggleForms() {
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    if (loginForm.style.display === 'none') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+    }
 }
 
-function addNotification(fileName) {
-    notifications.push(fileName);
-    const notificationList = document.getElementById('notification-list');
-    const notificationCount = document.getElementById('notification-count');
+function register() {
+    const name = document.getElementById('register-name').value;
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
 
-    // Atualiza a lista de notificações
-    const listItem = document.createElement('li');
-    listItem.textContent = fileName;
-    notificationList.appendChild(listItem);
-
-    // Atualiza o contador de notificações
-    notificationCount.textContent = notifications.length;
+    if (name && email && password) {
+        users.push({ name, email, password, role: 'student', blocked: false });
+        alert('Registro bem-sucedido! Você já pode fazer login.');
+        toggleForms();
+    } else {
+        alert('Por favor, preencha todos os campos.');
+    }
 }
 
-// Simulação de novas notificações (pode ser substituído por lógica real)
-setTimeout(() => addNotification('Arquivo 1.pdf'), 2000);
-setTimeout(() => addNotification('Arquivo 2.docx'), 4000);
+function login() {
+    const email0
