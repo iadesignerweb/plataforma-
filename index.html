@@ -3,110 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Cursos</title>
+    <title>Plataforma de Aulas Online</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Ícones) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- CSS Personalizado -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Cabeçalho -->
-        <header>
-            <h1>Plataforma de Cursos</h1>
-            <p>Seu portal para o conhecimento</p>
-        </header>
+    <!-- Cabeçalho -->
+    <header class="bg-primary text-white text-center py-4">
+        <div class="container">
+            <h1 class="display-4">Plataforma de Aulas Online</h1>
+            <p class="lead">Seu portal para o conhecimento</p>
+        </div>
+    </header>
 
-        <!-- Área de Cadastro e Login -->
-        <div class="main-content">
+    <!-- Área de Cadastro e Login -->
+    <section class="container my-5">
+        <div class="row">
             <!-- Formulário de Cadastro -->
-            <div class="form-container">
-                <h2>Cadastro de Aluno</h2>
-                <form id="cadastroForm" onsubmit="submitForm(); return false;">
-                    <input type="text" id="nome" placeholder="Nome Completo" required>
-                    <input type="number" id="idade" placeholder="Idade" required>
-                    <textarea id="descricao" placeholder="Descrição" required></textarea>
-                    <button type="submit">Cadastrar</button>
-                </form>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">Cadastro de Aluno</h2>
+                        <form id="cadastroForm" onsubmit="submitForm(); return false;">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome Completo</label>
+                                <input type="text" id="nome" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="idade" class="form-label">Idade</label>
+                                <input type="number" id="idade" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="descricao" class="form-label">Descrição</label>
+                                <textarea id="descricao" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <!-- Formulário de Login -->
-            <div class="form-container">
-                <h2>Login do Aluno</h2>
-                <form id="loginForm" onsubmit="login(); return false;">
-                    <input type="text" id="loginID" placeholder="ID de Acesso" required>
-                    <button type="submit">Entrar</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Dashboard do Aluno -->
-        <div class="dashboard" id="dashboard">
-            <div class="menu-superior">
-                <span>Área do Aluno</span>
-                <a href="#" onclick="logout()">Logout</a>
-            </div>
-            <div class="dashboard-content">
-                <h2>Bem-vindo, <span id="dashboardNome"></span>!</h2>
-                <div class="dashboard-options">
-                    <div class="option" onclick="acessarCurso('Física')">
-                        <i class="fas fa-book"></i>
-                        <p>Lições de Física</p>
-                    </div>
-                    <div class="option" onclick="acessarCurso('Matemática')">
-                        <i class="fas fa-calculator"></i>
-                        <p>Lições de Matemática</p>
-                    </div>
-                    <div class="option" onclick="acessarBancoQuestoes()">
-                        <i class="fas fa-question-circle"></i>
-                        <p>Banco de Questões</p>
-                    </div>
-                    <div class="option" onclick="acessarBiblioteca()">
-                        <i class="fas fa-book-open"></i>
-                        <p>Biblioteca de Aulas</p>
-                    </div>
-                    <div class="option" onclick="acessarGrupoTurma()">
-                        <i class="fas fa-users"></i>
-                        <p>Grupo da Turma</p>
-                    </div>
-                    <div class="option" onclick="acessarAlunos()">
-                        <i class="fas fa-user-graduate"></i>
-                        <p>Alunos</p>
-                    </div>
-                </div>
-                <div class="painel-grafico">
-                    <h2>Painel do Aluno</h2>
-                    <div class="status-pagamento">
-                        <span>Data da Matrícula: <span id="dataMatricula"></span></span>
-                        <span>Status: <span class="ativo">● Ativo</span></span>
-                    </div>
-                    <div class="gerar-boleto">
-                        <button onclick="gerarBoleto()">Gerar Boleto</button>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">Login do Aluno</h2>
+                        <form id="loginForm" onsubmit="login(); return false;">
+                            <div class="mb-3">
+                                <label for="loginID" class="form-label">ID de Acesso</label>
+                                <input type="text" id="loginID" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Entrar</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Dashboard do Administrador -->
-        <div class="admin-dashboard" id="adminDashboard">
-            <h1>Painel do Administrador</h1>
-            <div class="lista-alunos" id="listaAlunos">
-                <!-- Lista de alunos será preenchida dinamicamente -->
+    <!-- Dashboard do Aluno -->
+    <section class="container my-5" id="dashboard" style="display: none;">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title">Bem-vindo, <span id="dashboardNome"></span>!</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-book fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Lições de Física</h5>
+                                <button class="btn btn-outline-primary w-100" onclick="acessarCurso('Física')">Acessar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calculator fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Lições de Matemática</h5>
+                                <button class="btn btn-outline-primary w-100" onclick="acessarCurso('Matemática')">Acessar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-question-circle fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Banco de Questões</h5>
+                                <button class="btn btn-outline-primary w-100" onclick="acessarBancoQuestoes()">Acessar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Painel do Aluno</h5>
+                                <p>Data da Matrícula: <span id="dataMatricula"></span></p>
+                                <p>Status: <span class="badge bg-success">● Ativo</span></p>
+                                <button class="btn btn-primary w-100" onclick="gerarBoleto()">Gerar Boleto</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- Pop-up de ID de Acesso -->
-        <div class="popup" id="popup">
-            <p>Seu ID de acesso: <span id="popupID"></span></p>
-            <p style="color: #e74c3c; font-size: 0.9rem;">Guarde seu ID em local seguro!</p>
-            <button onclick="copiarID()">Copiar ID</button>
-            <button onclick="fecharPopup()">Fechar</button>
+    <!-- Dashboard do Administrador -->
+    <section class="container my-5" id="adminDashboard" style="display: none;">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="card-title">Painel do Administrador</h2>
+            </div>
+            <div class="card-body">
+                <div id="listaAlunos"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pop-up de ID de Acesso -->
+    <div class="modal fade" id="popup" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seu ID de Acesso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Seu ID de acesso: <span id="popupID"></span></p>
+                    <p class="text-danger">Guarde seu ID em local seguro!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="copiarID()">Copiar ID</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Rodapé -->
-    <footer>
-        <p>@Copyright 2025 - Plínio Studio</p>
+    <footer class="bg-primary text-white text-center py-3">
+        <p class="mb-0">@Copyright 2025 - Plínio Studio</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript Personalizado -->
     <script src="scripts.js"></script>
 </body>
 </html>
