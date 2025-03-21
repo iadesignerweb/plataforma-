@@ -1,210 +1,66 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma de Cursos</title>
-    <!-- Estilos -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0; padding: 0;
-            background-color: #f8f9fa;
-            display: flex; flex-direction: column;
-            align-items: center; min-height: 100vh;
-        }
-        header {
-            background-color: #007bff;
-            color: white; padding: 20px;
-            width: 100%; text-align: center;
-        }
-        .container { width: 90%; max-width: 1000px; margin-top: 20px; }
-        .form-container, .dashboard, .admin-dashboard {
-            display: none; background: white;
-            padding: 20px; border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        input, textarea {
-            width: 100%; padding: 10px;
-            margin: 10px 0; border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #007bff; color: white;
-            padding: 10px 20px; border: none;
-            border-radius: 5px; cursor: pointer;
-        }
-        .dashboard-options, .lista-alunos { margin-top: 20px; }
-        .option, .aluno-item {
-            background: #f1f3f5; padding: 10px;
-            margin: 10px 0; border-radius: 5px;
-            display: flex; justify-content: space-between;
-            align-items: center;
-        }
-        .status { padding: 3px 10px; border-radius: 10px; }
-        .ativo { background-color: #28a745; color: white; }
-        .bloqueado { background-color: #dc3545; color: white; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <header>
         <h1>Plataforma de Cursos</h1>
-        <p>Cadastre-se ou faça login para acessar!</p>
-        <button onclick="mostrarCadastro()">Cadastro</button>
-        <button onclick="mostrarLogin()">Login</button>
     </header>
-
     <div class="container">
-
-        <!-- Área de Cadastro -->
-        <div class="form-container" id="cadastroArea">
-            <h2>Cadastro de Aluno</h2>
-            <input type="text" id="nome" placeholder="Digite seu nome">
-            <input type="number" id="idade" placeholder="Digite sua idade">
-            <textarea id="descricao" placeholder="Fale sobre você"></textarea>
-            <button onclick="cadastrar()">Cadastrar</button>
-        </div>
-
-        <!-- Área de Login -->
-        <div class="form-container" id="loginArea">
+        <!-- Formulário de Login -->
+        <div id="login-form">
             <h2>Login</h2>
-            <input type="text" id="loginID" placeholder="Digite seu ID">
+            <input type="text" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Senha">
             <button onclick="login()">Entrar</button>
+            <p>Não possui uma conta? <a href="#" onclick="toggleForms()">Registre-se aqui</a></p>
         </div>
 
-        <!-- Dashboard Aluno -->
-        <div class="dashboard" id="dashboardAluno">
-            <h2>Bem-vindo(a), <span id="nomeAluno"></span></h2>
-            <div class="dashboard-options">
-                <div class="option">Lições de Física</div>
-                <div class="option">Lições de Matemática</div>
-                <div class="option">Banco de Questões</div>
-                <div class="option">Biblioteca de Aulas</div>
-            </div>
+        <!-- Formulário de Registro -->
+        <div id="register-form" class="hidden">
+            <h2>Registro</h2>
+            <input type="text" id="register-name" placeholder="Nome">
+            <input type="email" id="register-email" placeholder="Email">
+            <input type="password" id="register-password" placeholder="Senha">
+            <button onclick="register()">Registrar</button>
+            <p>Já possui uma conta? <a href="#" onclick="toggleForms()">Faça login aqui</a></p>
+        </div>
+
+        <!-- Dashboard do Administrador -->
+        <div id="admin-dashboard" class="hidden">
+            <h2>Painel do Administrador</h2>
             <button onclick="logout()">Sair</button>
+            <h3>Lista de Alunos</h3>
+            <ul id="student-list"></ul>
+            <h3>Upload de Arquivos</h3>
+            <input type="file" id="file-upload" multiple>
+            <button onclick="uploadFiles()">Enviar Arquivos</button>
+            <ul id="uploaded-files"></ul>
+            <h3>Gráficos de Desempenho</h3>
+            <canvas id="performance-chart"></canvas>
         </div>
 
-        <!-- Dashboard Admin -->
-        <div class="admin-dashboard" id="dashboardAdmin">
-            <h2>Administração de Alunos</h2>
-            <div class="lista-alunos" id="listaAlunos">
-                <!-- Lista gerada dinamicamente -->
-            </div>
+        <!-- Dashboard do Aluno -->
+        <div id="student-dashboard" class="hidden">
+            <h2>Painel do Aluno</h2>
             <button onclick="logout()">Sair</button>
+            <h3>Notificações</h3>
+            <ul id="notification-list"></ul>
+            <h3>Biblioteca</h3>
+            <ul id="library-list"></ul>
+            <h3>Banco de Questões</h3>
+            <ul id="question-bank"></ul>
+            <h3>Grupo da Turma</h3>
+            <ul id="class-group"></ul>
         </div>
-
     </div>
 
-    <!-- Pop-up com ID -->
-    <div class="form-container" id="popup" style="display:none;">
-        <h3>Seu ID:</h3>
-        <p id="popupID"></p>
-        <button onclick="fecharPopup()">Fechar</button>
-    </div>
-
-    <script>
-        let alunos = JSON.parse(localStorage.getItem('alunos')) || [];
-
-        function mostrarCadastro() {
-            esconderTudo();
-            document.getElementById('cadastroArea').style.display = 'block';
-        }
-
-        function mostrarLogin() {
-            esconderTudo();
-            document.getElementById('loginArea').style.display = 'block';
-        }
-
-        function esconderTudo() {
-            document.getElementById('cadastroArea').style.display = 'none';
-            document.getElementById('loginArea').style.display = 'none';
-            document.getElementById('dashboardAluno').style.display = 'none';
-            document.getElementById('dashboardAdmin').style.display = 'none';
-            document.getElementById('popup').style.display = 'none';
-        }
-
-        function cadastrar() {
-            const nome = document.getElementById('nome').value.trim();
-            const idade = document.getElementById('idade').value.trim();
-            const descricao = document.getElementById('descricao').value.trim();
-
-            if (nome && idade && descricao) {
-                const id = 'ALUNO' + Math.floor(Math.random() * 10000);
-                alunos.push({ id, nome, idade, descricao, status: 'ativo' });
-                localStorage.setItem('alunos', JSON.stringify(alunos));
-
-                document.getElementById('popupID').innerText = id;
-                esconderTudo();
-                document.getElementById('popup').style.display = 'block';
-            } else {
-                alert('Preencha todos os campos!');
-            }
-        }
-
-        function fecharPopup() {
-            mostrarLogin();
-        }
-
-        function login() {
-            const loginID = document.getElementById('loginID').value.trim();
-
-            if (loginID === 'admin') {
-                // Admin
-                esconderTudo();
-                document.getElementById('dashboardAdmin').style.display = 'block';
-                carregarListaAlunos();
-            } else {
-                const aluno = alunos.find(a => a.id === loginID);
-                if (aluno) {
-                    if (aluno.status === 'bloqueado') {
-                        alert('Seu acesso está bloqueado.');
-                        return;
-                    }
-                    esconderTudo();
-                    document.getElementById('dashboardAluno').style.display = 'block';
-                    document.getElementById('nomeAluno').innerText = aluno.nome;
-                } else {
-                    alert('ID inválido!');
-                }
-            }
-        }
-
-        function logout() {
-            esconderTudo();
-        }
-
-        function carregarListaAlunos() {
-            const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '';
-
-            alunos.forEach((aluno, index) => {
-                const item = document.createElement('div');
-                item.className = 'aluno-item';
-                item.innerHTML = `
-                    <span>${aluno.nome} (${aluno.id})</span>
-                    <span class="status ${aluno.status === 'ativo' ? 'ativo' : 'bloqueado'}">
-                        ${aluno.status}
-                    </span>
-                    <button onclick="toggleStatus(${index})">
-                        ${aluno.status === 'ativo' ? 'Bloquear' : 'Desbloquear'}
-                    </button>
-                `;
-                lista.appendChild(item);
-            });
-        }
-
-        function toggleStatus(index) {
-            alunos[index].status = alunos[index].status === 'ativo' ? 'bloqueado' : 'ativo';
-            localStorage.setItem('alunos', JSON.stringify(alunos));
-            carregarListaAlunos();
-        }
-
-        window.onload = () => {
-            mostrarLogin();
-        };
-    </script>
-
+    <!-- Inclusão da biblioteca Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
