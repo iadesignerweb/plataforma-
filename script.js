@@ -54,22 +54,26 @@ function copiarID() {
 // Função para fazer login
 function login() {
     const loginID = document.getElementById('loginID').value.trim();
-    const formData = localStorage.getItem(loginID);
 
+    // Verificar se o loginID é a senha do administrador
     if (loginID === '1316') {
         // Login do administrador
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
         carregarListaAlunos();
-    } else if (formData) {
-        // Login do aluno
-        const data = JSON.parse(formData);
-        document.getElementById('dashboardNome').textContent = data.nome;
-        document.getElementById('dataMatricula').textContent = data.dataMatricula;
-        document.getElementById('dashboard').style.display = 'block';
-        document.getElementById('adminDashboard').style.display = 'none';
     } else {
-        alert('ID de acesso inválido!');
+        // Verificar se o loginID é um ID de aluno válido
+        const formData = localStorage.getItem(loginID);
+        if (formData) {
+            // Login do aluno
+            const data = JSON.parse(formData);
+            document.getElementById('dashboardNome').textContent = data.nome;
+            document.getElementById('dataMatricula').textContent = data.dataMatricula;
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+        } else {
+            alert('ID de acesso inválido!');
+        }
     }
 }
 
