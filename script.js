@@ -26,6 +26,14 @@ function submitForm() {
     const popup = new bootstrap.Modal(document.getElementById('popup'));
     popup.show();
 
+    // Enviar notificação para o WhatsApp
+    const mensagem = `Novo aluno cadastrado!\nNome: ${nome}\nID: ${uniqueCode}\nDescrição: ${descricao}`;
+    const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
     // Limpar formulário
     document.getElementById('cadastroForm').reset();
 
