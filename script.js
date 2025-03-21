@@ -23,15 +23,8 @@ function submitForm() {
 
     // Exibir pop-up com o ID de acesso
     document.getElementById('popupID').textContent = uniqueCode;
-    document.getElementById('popup').style.display = 'block';
-
-    // Enviar ID para o WhatsApp (oculto para o aluno)
-    const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
-    const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
+    const popup = new bootstrap.Modal(document.getElementById('popup'));
+    popup.show();
 
     // Limpar formulário
     document.getElementById('cadastroForm').reset();
@@ -50,11 +43,6 @@ function copiarID() {
     });
 }
 
-// Função para fechar o popup manualmente
-function fecharPopup() {
-    document.getElementById('popup').style.display = 'none';
-}
-
 // Função para fazer login
 function login() {
     const loginID = document.getElementById('loginID').value.trim();
@@ -62,8 +50,6 @@ function login() {
 
     if (loginID === '1316') {
         // Login do administrador
-        document.getElementById('cadastroArea').style.display = 'none';
-        document.getElementById('loginArea').style.display = 'none';
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
         carregarListaAlunos();
@@ -72,12 +58,8 @@ function login() {
         const data = JSON.parse(formData);
         document.getElementById('dashboardNome').textContent = data.nome;
         document.getElementById('dataMatricula').textContent = data.dataMatricula;
-        document.getElementById('cadastroArea').style.display = 'none';
-        document.getElementById('loginArea').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
-
-        // Renderizar gráfico de mensalidades
-        renderizarGraficoMensalidades(data.dataMatricula);
+        document.getElementById('adminDashboard').style.display = 'none';
     } else {
         alert('ID de acesso inválido!');
     }
@@ -93,34 +75,17 @@ function carregarListaAlunos() {
         if (key.startsWith('ALUNO-')) {
             const aluno = JSON.parse(localStorage.getItem(key));
             const alunoItem = document.createElement('div');
-            alunoItem.className = 'aluno-item';
+            alunoItem.className = 'card mb-3';
             alunoItem.innerHTML = `
-                <span>${aluno.nome} (ID: ${key})</span>
-                <span class="contagem-regressiva">${calcularDiasRestantes(aluno.dataMatricula)} dias restantes</span>
-                <div class="status ${calcularStatusPagamento(aluno.dataMatricula) ? 'ativo' : 'inadimplente'}"></div>
+                <div class="card-body">
+                    <h5 class="card-title">${aluno.nome} (ID: ${key})</h5>
+                    <p class="card-text">Data da Matrícula: ${aluno.dataMatricula}</p>
+                    <button class="btn btn-primary" onclick="abrirDashboardAluno('${key}')">Acessar</button>
+                </div>
             `;
-            alunoItem.onclick = () => abrirDashboardAluno(key);
             listaAlunos.appendChild(alunoItem);
         }
     }
-}
-
-// Função para calcular dias restantes para o vencimento
-function calcularDiasRestantes(dataMatricula) {
-    const hoje = new Date();
-    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-    const diffTime = Math.abs(hoje - dataMatriculaObj);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return 30 - diffDays;
-}
-
-// Função para calcular status de pagamento
-function calcularStatusPagamento(dataMatricula) {
-    const hoje = new Date();
-    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-    const diffTime = Math.abs(hoje - dataMatriculaObj);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 30;
 }
 
 // Função para abrir dashboard do aluno
@@ -128,79 +93,8 @@ function abrirDashboardAluno(id) {
     const aluno = JSON.parse(localStorage.getItem(id));
     document.getElementById('dashboardNome').textContent = aluno.nome;
     document.getElementById('dataMatricula').textContent = aluno.dataMatricula;
-    document.getElementById('cadastroArea').style.display = 'none';
-    document.getElementById('loginArea').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     document.getElementById('adminDashboard').style.display = 'none';
-
-    // Renderizar gráfico de mensalidades
-    renderizarGraficoMensalidades(aluno.dataMatricula);
-}
-
-// Função para renderizar gráfico de mensalidades
-function renderizarGraficoMensalidades(dataMatricula) {
-    const ctx = document.getElementById('graficoMensalidades').getContext('2d');
-    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-    const mesMatricula = dataMatriculaObj.getMonth();
-    const anoMatricula = dataMatriculaObj.getFullYear();
-    const hoje = new Date();
-    const statusMesAtual = calcularStatusMesAtual(dataMatricula);
-
-    const dados = meses.map((mes, index) => {
-        if (index < mesMatricula) {
-            return null; // Meses antes da matrícula
-        } else if (index === mesMatricula) {
-            if (statusMesAtual === -1) {
-                return '#e74c3c'; // Inadimplente
-            } else {
-                const verde = Math.floor(255 * statusMesAtual);
-                return `rgba(39, 174, 96, ${statusMesAtual})`; // Gradiente de verde
-            }
-        } else {
-            return '#f1c40f'; // Meses futuros em amarelo
-        }
-    });
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: meses,
-            datasets: [{
-                label: '',
-                data: dados.map((cor, index) => cor ? 1 : null),
-                backgroundColor: dados,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            },
-            animation: {
-                duration: 1000,
-                easing: 'easeInOutQuad'
-            }
-        }
-    });
-}
-
-// Função para calcular o status do mês atual
-function calcularStatusMesAtual(dataMatricula) {
-    const hoje = new Date();
-    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
-    const diffTime = Math.abs(hoje - dataMatriculaObj);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays <= 30) {
-        return (30 - diffDays) / 30; // Retorna a porcentagem de dias restantes
-    } else {
-        return -1; // Mês inadimplente
-    }
 }
 
 // Função para gerar boleto
@@ -225,25 +119,10 @@ function acessarGrupoTurma() {
     alert('Acessando Grupo da Turma');
 }
 
-// Função para acessar a lista de alunos
-function acessarAlunos() {
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('adminDashboard').style.display = 'block';
-    carregarListaAlunos();
-}
-
-// Função para voltar à área de cadastro
-function voltarParaCadastro() {
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('cadastroArea').style.display = 'block';
-    document.getElementById('loginArea').style.display = 'block';
-}
-
 // Função para logout
 function logout() {
     document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('cadastroArea').style.display = 'block';
-    document.getElementById('loginArea').style.display = 'block';
+    document.getElementById('adminDashboard').style.display = 'none';
     document.getElementById('loginID').value = '';
     alert('Você saiu do sistema.');
 }
