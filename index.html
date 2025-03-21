@@ -3,162 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Cursos</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome (Ícones) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- CSS Personalizado -->
-    <link rel="stylesheet" href="styles.css">
+    <title>Sistema de Gerenciamento de Cursos</title>
+    <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <header class="bg-primary text-white text-center py-4">
-        <div class="container">
-            <h1 class="display-4">Plataforma de Cursos</h1>
-            <p class="lead">Seu portal para o conhecimento</p>
-        </div>
+    <header>
+        <h1>Sistema de Gerenciamento de Cursos</h1>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="mostrarSecao('loginAdmin')">Login Administrador</a></li>
+                <li><a href="#" onclick="mostrarSecao('loginAluno')">Login Aluno</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Área de Cadastro e Login -->
-    <section class="container my-5">
-        <div class="row">
-            <!-- Formulário de Cadastro -->
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title text-center">Cadastro de Aluno</h2>
-                        <form id="cadastroForm" onsubmit="submitForm(); return false;">
-                            <div class="mb-3">
-                                <label for="nome" class="form-label">Nome Completo</label>
-                                <input type="text" id="nome" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="idade" class="form-label">Idade</label>
-                                <input type="number" id="idade" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="descricao" class="form-label">Descrição</label>
-                                <textarea id="descricao" class="form-control" rows="3" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+    <main>
+        <section id="loginAdmin" class="secao">
+            <h2>Login do Administrador</h2>
+            <form id="formLoginAdmin" onsubmit="return validarLoginAdmin()">
+                <label for="senhaAdmin">Senha:</label>
+                <input type="password" id="senhaAdmin" required>
+                <button type="submit">Entrar</button>
+            </form>
+        </section>
 
-            <!-- Formulário de Login -->
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="card-title text-center">Login do Aluno</h2>
-                        <form id="loginForm" onsubmit="login(); return false;">
-                            <div class="mb-3">
-                                <label for="loginID" class="form-label">ID de Acesso</label>
-                                <input type="text" id="loginID" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">Entrar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <section id="loginAluno" class="secao">
+            <h2>Login do Aluno</h2>
+            <form id="formLoginAluno" onsubmit="return validarLoginAluno()">
+                <label for="idAluno">ID do Aluno:</label>
+                <input type="text" id="idAluno" required>
+                <button type="submit">Entrar</button>
+            </form>
+        </section>
 
-    <!-- Dashboard do Aluno -->
-    <section class="container my-5" id="dashboard" style="display: none;">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="card-title">Bem-vindo, <span id="dashboardNome"></span>!</h2>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-book fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Lições de Física</h5>
-                                <button class="btn btn-outline-primary w-100" onclick="acessarCurso('Física')">Acessar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-calculator fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Lições de Matemática</h5>
-                                <button class="btn btn-outline-primary w-100" onclick="acessarCurso('Matemática')">Acessar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-question-circle fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Banco de Questões</h5>
-                                <button class="btn btn-outline-primary w-100" onclick="acessarBancoQuestoes()">Acessar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Painel do Aluno</h5>
-                                <p>Data da Matrícula: <span id="dataMatricula"></span></p>
-                                <p>Status: <span class="badge bg-success">● Ativo</span></p>
-                                <button class="btn btn-primary w-100" onclick="gerarBoleto()">Gerar Boleto</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <section id="dashboardAdmin" class="secao">
+            <h2>Dashboard do Administrador</h2>
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="mostrarSecao('upload')">Upload de Arquivos</a></li>
+                    <li><a href="#" onclick="mostrarSecao('remover')">Remover Arquivos</a></li>
+                    <li><a href="#" onclick="mostrarSecao('notificacoes')">Notificações</a></li>
+                    <li><a href="#" onclick="mostrarSecao('graficos')">Gráficos</a></li>
+                    <li><a href="#" onclick="mostrarSecao('biblioteca')">Biblioteca</a></li>
+                    <li><a href="#" onclick="mostrarSecao('bancoQuestoes')">Banco de Questões</a></li>
+                    <li><a href="#" onclick="mostrarSecao('grupoTurma')">Grupo da Turma</a></li>
+                    <li><a href="#" onclick="mostrarSecao('gerenciarAlunos')">Gerenciar Alunos</a></li>
+                </ul>
+            </nav>
 
-    <!-- Dashboard do Administrador -->
-    <section class="container my-5" id="adminDashboard" style="display: none;">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2 class="card-title">Painel do Administrador</h2>
-            </div>
-            <div class="card-body">
-                <div id="listaAlunos"></div>
-            </div>
-        </div>
-    </section>
+            <section id="upload" class="secaoInterna">
+                <h3>Upload de Arquivos</h3>
+                <form id="formUpload" enctype="multipart/form-data">
+                    <input type="file" id="arquivoUpload" required>
+                    <button type="submit">Upload</button>
+                </form>
+            </section>
 
-    <!-- Pop-up de ID de Acesso -->
-    <div class="modal fade" id="popup" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Seu ID de Acesso</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Seu ID de acesso: <span id="popupID"></span></p>
-                    <p class="text-danger">Guarde seu ID em local seguro!</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                    <button type="button" class="btn btn-primary" onclick="copiarID()">Copiar ID</button>
-                </div>
-            </div>
-        </div>
-    </div>
+            <section id="remover" class="secaoInterna">
+                <h3>Remover Arquivos</h3>
+                <ul id="listaArquivos">
+                    <!-- Lista de arquivos será carregada aqui -->
+                </ul>
+            </section>
 
-    <!-- Rodapé -->
-    <footer class="bg-primary text-white text-center py-3">
-        <p class="mb-0">@Copyright 2025 - Plínio Studio</p>
-    </footer>
+            <section id="notificacoes" class="secaoInterna">
+                <h3>Notificações</h3>
+                <form id="formNotificacao">
+                    <textarea id="mensagemNotificacao" placeholder="Digite a notificação..." required></textarea>
+                    <button type="submit">Enviar Notificação</button>
+                </form>
+                <ul id="listaNotificacoes">
+                    <!-- Lista de notificações será carregada aqui -->
+                </ul>
+            </section>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- JavaScript Personalizado -->
-    <script src="scripts.js"></script>
+            <section id="graficos" class="secaoInterna">
+                <h3>Gráficos</h3>
+                <canvas id="grafico"></canvas>
+            </section>
+
+            <section id="biblioteca" class="secaoInterna">
+                <h3>Biblioteca</h3>
+                <!-- Conteúdo da biblioteca -->
+            </section>
+
+            <section id="bancoQuestoes" class="secaoInterna">
+                <h3>Banco de Questões</h3>
+                <!-- Conteúdo do banco de questões -->
+            </section>
+
+            <section id="grupoTurma" class="secaoInterna">
+                <h3>Grupo da Turma</h3>
+                <!-- Conteúdo do grupo da turma -->
+            </section>
+
+            <section id="gerenciarAlunos" class="secaoInterna">
+                <h3>Gerenciar Alunos</h3>
+                <ul id="listaAlunos">
+                    <!-- Lista de alunos será carregada aqui -->
+                </ul>
+            </section>
+        </section>
+
+        <section id="dashboardAluno" class="secao">
+            <h2>Dashboard do Aluno</h2>
+            <section id="notificacoesAluno">
+                <h3>Notificações</h3>
+                <ul id="listaNotificacoesAluno">
+                    <!-- Lista de notificações será carregada aqui -->
+                </ul>
+            </section>
+
+            <section id="arquivosDisponiveis">
+                <h3>Arquivos Disponíveis</h3>
+                <ul id="listaArquivosAluno">
+                    <!-- Lista de arquivos disponíveis será carregada aqui -->
+                </ul>
+            </section>
+
+            <section id="progressoAluno">
+                <h3>Progresso</h3>
+                <canvas id="graficoProgresso"></canvas>
+            </section>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
