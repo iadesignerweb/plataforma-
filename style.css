@@ -1,68 +1,110 @@
-body {
-    font-family: Arial, sans-serif;
+/* Reset básico de margens e paddings */
+* {
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    box-sizing: border-box;
 }
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 0;
+
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container centralizado */
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
     text-align: center;
 }
-.container {
-    width: 90%;
-    margin: auto;
-    overflow: hidden;
-}
-#login-form, #register-form, #admin-dashboard, #student-dashboard {
-    background: #fff;
-    padding: 20px;
-    margin-top: 20px;
-}
-input[type="text"], input[type="password"], input[type="email"] {
+
+/* Formulário de login */
+#login-form input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
-    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
-input[type="submit"], button {
+
+#login-form button {
+    width: 100%;
     padding: 10px;
-    background: #333;
+    background-color: #5cb85c;
     color: #fff;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
-    width: 100%;
-    box-sizing: border-box;
 }
-ul {
+
+#login-form button:hover {
+    background-color: #4cae4c;
+}
+
+/* Dashboards */
+.dashboard {
+    display: none;
+    width: 100%;
+    max-width: 800px;
+}
+
+.dashboard h2 {
+    margin-bottom: 20px;
+}
+
+.dashboard button {
+    padding: 10px 20px;
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.dashboard button:hover {
+    background-color: #c9302c;
+}
+
+/* Seções do dashboard */
+.admin-section, .student-section {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h3, .student-section h3 {
+    margin-bottom: 10px;
+}
+
+.admin-section ul, .student-section ul {
     list-style: none;
     padding: 0;
 }
-ul li {
-    background: #f4f4f4;
-    margin: 5px 0;
+
+.admin-section li, .student-section li {
     padding: 10px;
-    border: #ccc 1px solid;
+    border-bottom: 1px solid #eee;
 }
-.hidden {
-    display: none;
+
+.admin-section li:last-child, .student-section li:last-child {
+    border-bottom: none;
 }
-.notification {
-    background-color: #ff9800;
-    color: white;
-    padding: 10px;
-    margin: 10px 0;
-}
-.blocked {
-    background-color: #f44336;
-    color: white;
-}
-@media (max-width: 600px) {
-    header {
-        font-size: 1.2em;
-    }
-    input[type="submit"], button {
-        font-size: 1em;
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 10px;
     }
 }
