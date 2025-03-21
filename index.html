@@ -3,64 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Cursos</title>
+    <title>Plataforma de Cursos Online</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Plataforma de Cursos</h1>
-    </header>
-    <div class="container">
-        <!-- Formulário de Login -->
-        <div id="login-form">
-            <h2>Login</h2>
-            <input type="text" id="login-email" placeholder="Email">
-            <input type="password" id="login-password" placeholder="Senha">
-            <button onclick="login()">Entrar</button>
-            <p>Não possui uma conta? <a href="#" onclick="toggleForms()">Registre-se aqui</a></p>
-        </div>
+    <!-- Formulário de Login -->
+    <div id="login-container" class="container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="password" id="password" placeholder="Senha">
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
 
-        <!-- Formulário de Registro -->
-        <div id="register-form" class="hidden">
-            <h2>Registro</h2>
-            <input type="text" id="register-name" placeholder="Nome">
-            <input type="email" id="register-email" placeholder="Email">
-            <input type="password" id="register-password" placeholder="Senha">
-            <button onclick="register()">Registrar</button>
-            <p>Já possui uma conta? <a href="#" onclick="toggleForms()">Faça login aqui</a></p>
-        </div>
-
-        <!-- Dashboard do Administrador -->
-        <div id="admin-dashboard" class="hidden">
-            <h2>Painel do Administrador</h2>
-            <button onclick="logout()">Sair</button>
-            <h3>Lista de Alunos</h3>
+    <!-- Dashboard do Administrador -->
+    <div id="admin-dashboard" class="dashboard">
+        <h2>Dashboard do Administrador</h2>
+        <button id="logout-admin">Sair</button>
+        <!-- Funcionalidades do Administrador -->
+        <div class="admin-section">
+            <h3>Gerenciar Alunos</h3>
             <ul id="student-list"></ul>
-            <h3>Upload de Arquivos</h3>
-            <input type="file" id="file-upload" multiple>
-            <button onclick="uploadFiles()">Enviar Arquivos</button>
-            <ul id="uploaded-files"></ul>
-            <h3>Gráficos de Desempenho</h3>
-            <canvas id="performance-chart"></canvas>
         </div>
-
-        <!-- Dashboard do Aluno -->
-        <div id="student-dashboard" class="hidden">
-            <h2>Painel do Aluno</h2>
-            <button onclick="logout()">Sair</button>
+        <div class="admin-section">
+            <h3>Upload de Arquivos</h3>
+            <input type="file" id="file-upload">
+            <button id="upload-file">Upload</button>
+            <ul id="file-list"></ul>
+        </div>
+        <div class="admin-section">
             <h3>Notificações</h3>
+            <input type="text" id="notification-input" placeholder="Escreva uma notificação">
+            <button id="send-notification">Enviar</button>
             <ul id="notification-list"></ul>
-            <h3>Biblioteca</h3>
-            <ul id="library-list"></ul>
-            <h3>Banco de Questões</h3>
-            <ul id="question-bank"></ul>
-            <h3>Grupo da Turma</h3>
-            <ul id="class-group"></ul>
+        </div>
+        <div class="admin-section">
+            <h3>Estatísticas</h3>
+            <canvas id="admin-chart"></canvas>
         </div>
     </div>
 
-    <!-- Inclusão da biblioteca Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Dashboard do Aluno -->
+    <div id="student-dashboard" class="dashboard">
+        <h2>Dashboard do Aluno</h2>
+        <button id="logout-student">Sair</button>
+        <!-- Funcionalidades do Aluno -->
+        <div class="student-section">
+            <h3>Notificações</h3>
+            <ul id="student-notification-list"></ul>
+        </div>
+        <div class="student-section">
+            <h3>Biblioteca</h3>
+            <ul id="library-list"></ul>
+        </div>
+        <div class="student-section">
+            <h3>Banco de Questões</h3>
+            <ul id="question-bank"></ul>
+        </div>
+        <div class="student-section">
+            <h3>Grupos da Turma</h3>
+            <ul id="group-list"></ul>
+        </div>
+        <div class="student-section">
+            <h3>Progresso</h3>
+            <canvas id="student-chart"></canvas>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
