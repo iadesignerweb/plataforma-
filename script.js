@@ -1,201 +1,249 @@
-// script.js
-
-// Dados simulados para alunos
-const students = [
-    { id: 1, name: 'João Silva', blocked: false, notifications: [] },
-    { id: 2, name: 'Maria Souza', blocked: false, notifications: [] },
-    { id: 3, name: 'Carlos Pereira', blocked: true, notifications: [] }
-];
-
-// Dados simulados para arquivos
-let files = [
-    { id: 1, name: 'Apostila de Matemática.pdf' },
-    { id: 2, name: 'Exercícios de Física.docx' }
-];
-
-// Elementos do DOM
-const loginContainer = document.getElementById('login-container');
-const adminDashboard = document.getElementById('admin-dashboard');
-const studentDashboard = document.getElementById('student-dashboard');
-const passwordInput = document.getElementById('password');
-const loginForm = document.getElementById('login-form');
-const studentList = document.getElementById('student-list');
-const fileUploadInput = document.getElementById('file-upload');
-const fileList = document.getElementById('file-list');
-const notificationInput = document.getElementById('notification-input');
-const notificationList = document.getElementById('notification-list');
-const studentNotificationList = document.getElementById('student-notification-list');
-const libraryList = document.getElementById('library-list');
-const questionBank = document.getElementById('question-bank');
-const groupList = document.getElementById('group-list');
-const adminChartCtx = document.getElementById('admin-chart').getContext('2d');
-const studentChartCtx = document.getElementById('student-chart').getContext('2d');
-
-// Função para exibir o dashboard do administrador
-function showAdminDashboard() {
-    loginContainer.style.display = 'none';
-    adminDashboard.style.display = 'block';
-    studentDashboard.style.display = 'none';
-    renderStudentList();
-    renderFileList();
-    renderAdminChart();
+// Função para gerar código único
+function generateUniqueCode() {
+    return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
 }
 
-// Função para exibir o dashboard do aluno
-function showStudentDashboard(student) {
-    loginContainer.style.display = 'none';
-    adminDashboard.style.display = 'none';
-    studentDashboard.style.display = 'block';
-    renderStudentNotifications(student);
-    renderLibraryList();
-    renderQuestionBank();
-    renderGroupList();
-    renderStudentChart();
+// Função para cadastrar aluno
+function submitForm() {
+    const nome = document.getElementById('nome').value;
+    const idade = document.getElementById('idade').value;
+    const descricao = document.getElementById('descricao').value;
+
+    // Gerar código único
+    const uniqueCode = generateUniqueCode();
+
+    // Armazenar dados no localStorage
+    const formData = {
+        nome: nome,
+        idade: idade,
+        descricao: descricao,
+        dataMatricula: new Date().toLocaleDateString('pt-BR')
+    };
+    localStorage.setItem(uniqueCode, JSON.stringify(formData));
+
+    // Exibir pop-up com o ID de acesso
+    document.getElementById('popupID').textContent = uniqueCode;
+    document.getElementById('popup').style.display = 'block';
+
+    // Enviar ID para o WhatsApp (oculto para o aluno)
+    const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
+    const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
+    // Limpar formulário
+    document.getElementById('cadastroForm').reset();
+
+    // Atualizar a lista de alunos no painel do administrador
+    carregarListaAlunos();
+
+    return false; // Evita o envio do formulário
 }
 
-// Função para renderizar a lista de alunos no dashboard do administrador
-function renderStudentList() {
-    studentList.innerHTML = '';
-    students.forEach(student => {
-        const li = document.createElement('li');
-        li.textContent = `${student.name} - ${student.blocked ? 'Bloqueado' : 'Ativo'}`;
-        const toggleButton = document.createElement('button');
-        toggleButton.textContent = student.blocked ? 'Desbloquear' : 'Bloquear';
-        toggleButton.addEventListener('click', () => toggleStudentStatus(student));
-        li.appendChild(toggleButton);
-        studentList.appendChild(li);
+// Função para copiar o ID
+function copiarID() {
+    const id = document.getElementById('popupID').textContent;
+    navigator.clipboard.writeText(id).then(() => {
+        alert('ID copiado para a área de transferência!');
     });
 }
 
-// Função para alternar o status de bloqueio de um aluno
-function toggleStudentStatus(student) {
-    student.blocked = !student.blocked;
-    renderStudentList();
+// Função para fechar o popup manualmente
+function fecharPopup() {
+    document.getElementById('popup').style.display = 'none';
 }
 
-// Função para renderizar a lista de arquivos no dashboard do administrador
-function renderFileList() {
-    fileList.innerHTML = '';
-    files.forEach(file => {
-        const li = document.createElement('li');
-        li.textContent = file.name;
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remover';
-        removeButton.addEventListener('click', () => removeFile(file));
-        li.appendChild(removeButton);
-        fileList.appendChild(li);
-    });
-}
+// Função para fazer login
+function login() {
+    const loginID = document.getElementById('loginID').value.trim();
+    const formData = localStorage.getItem(loginID);
 
-// Função para remover um arquivo
-function removeFile(file) {
-    files = files.filter(f => f.id !== file.id);
-    renderFileList();
-}
+    if (loginID === '1316') {
+        // Login do administrador
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        carregarListaAlunos();
+    } else if (formData) {
+        // Login do aluno
+        const data = JSON.parse(formData);
+        document.getElementById('dashboardNome').textContent = data.nome;
+        document.getElementById('dataMatricula').textContent = data.dataMatricula;
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
 
-// Função para enviar uma notificação para todos os alunos
-function sendNotification() {
-    const message = notificationInput.value.trim();
-    if (message) {
-        students.forEach(student => {
-            student.notifications.push(message);
-        });
-        renderNotificationList(message);
-        notificationInput.value = '';
+        // Renderizar gráfico de mensalidades
+        renderizarGraficoMensalidades(data.dataMatricula);
+    } else {
+        alert('ID de acesso inválido!');
     }
 }
 
-// Função para renderizar a lista de notificações no dashboard do administrador
-function renderNotificationList(message) {
-    const li = document.createElement('li');
-    li.textContent = message;
-    notificationList.appendChild(li);
+// Função para carregar lista de alunos no painel do administrador
+function carregarListaAlunos() {
+    const listaAlunos = document.getElementById('listaAlunos');
+    listaAlunos.innerHTML = '';
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('ALUNO-')) {
+            const aluno = JSON.parse(localStorage.getItem(key));
+            const alunoItem = document.createElement('div');
+            alunoItem.className = 'aluno-item';
+            alunoItem.innerHTML = `
+                <span>${aluno.nome} (ID: ${key})</span>
+                <span class="contagem-regressiva">${calcularDiasRestantes(aluno.dataMatricula)} dias restantes</span>
+                <div class="status ${calcularStatusPagamento(aluno.dataMatricula) ? 'ativo' : 'inadimplente'}"></div>
+            `;
+            alunoItem.onclick = () => abrirDashboardAluno(key);
+            listaAlunos.appendChild(alunoItem);
+        }
+    }
 }
 
-// Função para renderizar as notificações no dashboard do aluno
-function renderStudentNotifications(student) {
-    studentNotificationList.innerHTML = '';
-    student.notifications.forEach(notification => {
-        const li = document.createElement('li');
-        li.textContent = notification;
-        studentNotificationList.appendChild(li);
+// Função para calcular dias restantes para o vencimento
+function calcularDiasRestantes(dataMatricula) {
+    const hoje = new Date();
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const diffTime = Math.abs(hoje - dataMatriculaObj);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return 30 - diffDays;
+}
+
+// Função para calcular status de pagamento
+function calcularStatusPagamento(dataMatricula) {
+    const hoje = new Date();
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const diffTime = Math.abs(hoje - dataMatriculaObj);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 30;
+}
+
+// Função para abrir dashboard do aluno
+function abrirDashboardAluno(id) {
+    const aluno = JSON.parse(localStorage.getItem(id));
+    document.getElementById('dashboardNome').textContent = aluno.nome;
+    document.getElementById('dataMatricula').textContent = aluno.dataMatricula;
+    document.getElementById('cadastroArea').style.display = 'none';
+    document.getElementById('loginArea').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('adminDashboard').style.display = 'none';
+
+    // Renderizar gráfico de mensalidades
+    renderizarGraficoMensalidades(aluno.dataMatricula);
+}
+
+// Função para renderizar gráfico de mensalidades
+function renderizarGraficoMensalidades(dataMatricula) {
+    const ctx = document.getElementById('graficoMensalidades').getContext('2d');
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const mesMatricula = dataMatriculaObj.getMonth();
+    const anoMatricula = dataMatriculaObj.getFullYear();
+    const hoje = new Date();
+    const statusMesAtual = calcularStatusMesAtual(dataMatricula);
+
+    const dados = meses.map((mes, index) => {
+        if (index < mesMatricula) {
+            return null; // Meses antes da matrícula
+        } else if (index === mesMatricula) {
+            if (statusMesAtual === -1) {
+                return '#e74c3c'; // Inadimplente
+            } else {
+                const verde = Math.floor(255 * statusMesAtual);
+                return `rgba(39, 174, 96, ${statusMesAtual})`; // Gradiente de verde
+            }
+        } else {
+            return '#f1c40f'; // Meses futuros em amarelo
+        }
     });
-}
 
-// Função para renderizar a lista de arquivos na biblioteca do aluno
-function renderLibraryList() {
-    libraryList.innerHTML = '';
-    files.forEach(file => {
-        const li = document.createElement('li');
-        li.textContent = file.name;
-        libraryList.appendChild(li);
-    });
-}
-
-// Função para renderizar o banco de questões
-function renderQuestionBank() {
-    // Exemplo de questões simuladas
-    const questions = [
-        'Qual é a fórmula de Bhaskara?',
-        'Explique a teoria da relatividade.',
-        'Quais são as leis de Newton?'
-    ];
-    questionBank.innerHTML = '';
-    questions.forEach(question => {
-        const li = document.createElement('li');
-        li.textContent = question;
-        questionBank.appendChild(li);
-    });
-}
-
-// Função para renderizar a lista de grupos da turma
-function renderGroupList() {
-    // Exemplo de grupos simulados
-    const groups = [
-        'Grupo de Estudos de Matemática',
-        'Grupo de Física Aplicada',
-        'Discussões sobre Literatura'
-    ];
-    groupList.innerHTML = '';
-    groups.forEach(group => {
-        const li = document.createElement('li');
-        li.textContent = group;
-        groupList.appendChild(li);
-    });
-}
-
-// Função para renderizar o gráfico no dashboard do administrador
-function renderAdminChart() {
-    new Chart(adminChartCtx, {
+    new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Alunos Ativos', 'Alunos Bloqueados'],
+            labels: meses,
             datasets: [{
-                label: 'Quantidade de Alunos',
-                data: [
-                    students.filter(student => !student.blocked).length,
-                    students.filter(student => student.blocked).length
-                ],
-                backgroundColor: ['#4caf50', '#f44336']
+                label: '',
+                data: dados.map((cor, index) => cor ? 1 : null),
+                backgroundColor: dados,
+                borderWidth: 1
             }]
         },
         options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
                 }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuad'
             }
         }
     });
 }
 
-// Função para renderizar o gráfico no dashboard do aluno
-function renderStudentChart() {
-    new Chart(studentChartCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Progresso', 'Restante'],
-            datasets: [{
-                data: [70, 30], // Exemplo de progresso: 70% concluído
-0
+// Função para calcular o status do mês atual
+function calcularStatusMesAtual(dataMatricula) {
+    const hoje = new Date();
+    const dataMatriculaObj = new Date(dataMatricula.split('/').reverse().join('-'));
+    const diffTime = Math.abs(hoje - dataMatriculaObj);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays <= 30) {
+        return (30 - diffDays) / 30; // Retorna a porcentagem de dias restantes
+    } else {
+        return -1; // Mês inadimplente
+    }
+}
+
+// Função para gerar boleto
+function gerarBoleto() {
+    alert('Boleto gerado com sucesso!');
+}
+
+// Funções para as opções do dashboard
+function acessarCurso(curso) {
+    alert(`Acessando curso de ${curso}`);
+}
+
+function acessarBancoQuestoes() {
+    alert('Acessando Banco de Questões');
+}
+
+function acessarBiblioteca() {
+    alert('Acessando Biblioteca de Aulas');
+}
+
+function acessarGrupoTurma() {
+    alert('Acessando Grupo da Turma');
+}
+
+// Função para acessar a lista de alunos
+function acessarAlunos() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('adminDashboard').style.display = 'block';
+    carregarListaAlunos();
+}
+
+// Função para voltar à área de cadastro
+function voltarParaCadastro() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('cadastroArea').style.display = 'block';
+    document.getElementById('loginArea').style.display = 'block';
+}
+
+// Função para logout
+function logout() {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('cadastroArea').style.display = 'block';
+    document.getElementById('loginArea').style.display = 'block';
+    document.getElementById('loginID').value = '';
+    alert('Você saiu do sistema.');
+}
