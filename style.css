@@ -342,3 +342,47 @@ footer {
 footer p {
     font-size: 0.9rem;
 }
+
+/* Novas funcionalidades */
+.controle-aluno {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-admin {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+}
+
+.btn-admin:hover {
+    background-color: #c0392b;
+}
+
+.upload-area {
+    margin-top: 20px;
+    padding: 10px;
+    background: #ecf0f1;
+    border-radius: 5px;
+}
+
+.notificacoes-aluno {
+    margin-top: 20px;
+    padding: 20px;
+    background: #ecf0f1;
+    border-radius: 5px;
+}
+
+.notificacao {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notificacao:last-child {
+    border-bottom: none;
+}
