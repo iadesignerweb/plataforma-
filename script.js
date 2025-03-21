@@ -23,11 +23,10 @@ function submitForm() {
 
     // Exibir pop-up com o ID de acesso
     document.getElementById('popupID').textContent = uniqueCode;
-    const popup = new bootstrap.Modal(document.getElementById('popup'));
-    popup.show();
+    document.getElementById('popup').style.display = 'block';
 
-    // Enviar notificação para o WhatsApp
-    const mensagem = `Novo aluno cadastrado!\nNome: ${nome}\nID: ${uniqueCode}\nDescrição: ${descricao}`;
+    // Enviar ID para o WhatsApp (oculto para o aluno)
+    const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
     const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
@@ -35,12 +34,12 @@ function submitForm() {
     document.body.appendChild(iframe);
 
     // Limpar formulário
-    document.getElementById('cadastroForm').reset();
+    document.getElementById('formCadastro').reset();
 
     // Atualizar a lista de alunos no painel do administrador
     carregarListaAlunos();
 
-    return false; // Evita o envio do formulário
+    return false;
 }
 
 // Função para copiar o ID
@@ -51,29 +50,33 @@ function copiarID() {
     });
 }
 
+// Função para fechar o popup manualmente
+function fecharPopup() {
+    document.getElementById('popup').style.display = 'none';
+}
+
 // Função para fazer login
 function login() {
     const loginID = document.getElementById('loginID').value.trim();
+    const formData = localStorage.getItem(loginID);
 
-    // Verificar se o loginID é a senha do administrador
     if (loginID === '1316') {
-        // Login do administrador
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
         carregarListaAlunos();
+    } else if (formData) {
+        const data = JSON.parse(formData);
+        document.getElementById('dashboardNome').textContent = data.nome;
+        document.getElementById('dataMatricula').textContent = data.dataMatricula;
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+
+        renderizarGraficoMensalidades(data.dataMatricula);
     } else {
-        // Verificar se o loginID é um ID de aluno válido
-        const formData = localStorage.getItem(loginID);
-        if (formData) {
-            // Login do aluno
-            const data = JSON.parse(formData);
-            document.getElementById('dashboardNome').textContent = data.nome;
-            document.getElementById('dataMatricula').textContent = data.dataMatricula;
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('adminDashboard').style.display = 'none';
-        } else {
-            alert('ID de acesso inválido!');
-        }
+        alert('ID de acesso inválido!');
     }
 }
 
@@ -87,54 +90,8 @@ function carregarListaAlunos() {
         if (key.startsWith('ALUNO-')) {
             const aluno = JSON.parse(localStorage.getItem(key));
             const alunoItem = document.createElement('div');
-            alunoItem.className = 'card mb-3';
+            alunoItem.className = 'aluno-item';
             alunoItem.innerHTML = `
-                <div class="card-body">
-                    <h5 class="card-title">${aluno.nome} (ID: ${key})</h5>
-                    <p class="card-text">Data da Matrícula: ${aluno.dataMatricula}</p>
-                    <button class="btn btn-primary" onclick="abrirDashboardAluno('${key}')">Acessar</button>
-                </div>
-            `;
-            listaAlunos.appendChild(alunoItem);
-        }
-    }
-}
-
-// Função para abrir dashboard do aluno
-function abrirDashboardAluno(id) {
-    const aluno = JSON.parse(localStorage.getItem(id));
-    document.getElementById('dashboardNome').textContent = aluno.nome;
-    document.getElementById('dataMatricula').textContent = aluno.dataMatricula;
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('adminDashboard').style.display = 'none';
-}
-
-// Função para gerar boleto
-function gerarBoleto() {
-    alert('Boleto gerado com sucesso!');
-}
-
-// Funções para as opções do dashboard
-function acessarCurso(curso) {
-    alert(`Acessando curso de ${curso}`);
-}
-
-function acessarBancoQuestoes() {
-    alert('Acessando Banco de Questões');
-}
-
-function acessarBiblioteca() {
-    alert('Acessando Biblioteca de Aulas');
-}
-
-function acessarGrupoTurma() {
-    alert('Acessando Grupo da Turma');
-}
-
-// Função para logout
-function logout() {
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('adminDashboard').style.display = 'none';
-    document.getElementById('loginID').value = '';
-    alert('Você saiu do sistema.');
-}
+                <span>${aluno.nome} (ID: ${key})</span>
+                <span class="contagem-regressiva">${calcularDiasRestantes(aluno.dataMatricula)} dias restantes</span>
+                <div class="status ${calcularStatusPagamento(aluno.dataMatricula) ? '
