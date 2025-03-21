@@ -1,134 +1,120 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gerenciamento de Cursos</title>
-    <link rel="stylesheet" href="css/estilo.css">
+    <title>Plataforma de Cursos</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Sistema de Gerenciamento de Cursos</h1>
-        <nav>
-            <ul>
-                <li><a href="#" onclick="mostrarSecao('loginAdmin')">Login Administrador</a></li>
-                <li><a href="#" onclick="mostrarSecao('loginAluno')">Login Aluno</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header>
+            <h1>Plataforma de Cursos</h1>
+            <p>Seu portal para o conhecimento</p>
+        </header>
 
-    <main>
-        <section id="loginAdmin" class="secao">
-            <h2>Login do Administrador</h2>
-            <form id="formLoginAdmin" onsubmit="return validarLoginAdmin()">
-                <label for="senhaAdmin">Senha:</label>
-                <input type="password" id="senhaAdmin" required>
-                <button type="submit">Entrar</button>
-            </form>
-        </section>
-
-        <section id="loginAluno" class="secao">
-            <h2>Login do Aluno</h2>
-            <form id="formLoginAluno" onsubmit="return validarLoginAluno()">
-                <label for="idAluno">ID do Aluno:</label>
-                <input type="text" id="idAluno" required>
-                <button type="submit">Entrar</button>
-            </form>
-        </section>
-
-        <section id="dashboardAdmin" class="secao">
-            <h2>Dashboard do Administrador</h2>
-            <nav>
-                <ul>
-                    <li><a href="#" onclick="mostrarSecao('upload')">Upload de Arquivos</a></li>
-                    <li><a href="#" onclick="mostrarSecao('remover')">Remover Arquivos</a></li>
-                    <li><a href="#" onclick="mostrarSecao('notificacoes')">Notificações</a></li>
-                    <li><a href="#" onclick="mostrarSecao('graficos')">Gráficos</a></li>
-                    <li><a href="#" onclick="mostrarSecao('biblioteca')">Biblioteca</a></li>
-                    <li><a href="#" onclick="mostrarSecao('bancoQuestoes')">Banco de Questões</a></li>
-                    <li><a href="#" onclick="mostrarSecao('grupoTurma')">Grupo da Turma</a></li>
-                    <li><a href="#" onclick="mostrarSecao('gerenciarAlunos')">Gerenciar Alunos</a></li>
-                </ul>
-            </nav>
-
-            <section id="upload" class="secaoInterna">
-                <h3>Upload de Arquivos</h3>
-                <form id="formUpload" enctype="multipart/form-data">
-                    <input type="file" id="arquivoUpload" required>
-                    <button type="submit">Upload</button>
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            <!-- Área de Cadastro -->
+            <div class="form-container" id="cadastroArea">
+                <h2>Cadastro de Aluno</h2>
+                <form id="formCadastro" onsubmit="return submitForm()">
+                    <input type="text" id="nome" placeholder="Digite seu nome" required>
+                    <input type="number" id="idade" placeholder="Digite sua idade" required>
+                    <textarea id="descricao" placeholder="Descreva-se brevemente..." required></textarea>
+                    <button type="submit">Cadastrar</button>
                 </form>
-            </section>
+            </div>
 
-            <section id="remover" class="secaoInterna">
-                <h3>Remover Arquivos</h3>
-                <ul id="listaArquivos">
-                    <!-- Lista de arquivos será carregada aqui -->
-                </ul>
-            </section>
+            <!-- Área de Login -->
+            <div class="form-container" id="loginArea">
+                <h2>Login do Aluno</h2>
+                <input type="text" id="loginID" placeholder="Digite seu ID de acesso">
+                <button onclick="login()">Entrar</button>
+            </div>
 
-            <section id="notificacoes" class="secaoInterna">
-                <h3>Notificações</h3>
-                <form id="formNotificacao">
-                    <textarea id="mensagemNotificacao" placeholder="Digite a notificação..." required></textarea>
-                    <button type="submit">Enviar Notificação</button>
-                </form>
-                <ul id="listaNotificacoes">
-                    <!-- Lista de notificações será carregada aqui -->
-                </ul>
-            </section>
+            <!-- Dashboard do Aluno -->
+            <div class="dashboard" id="dashboard">
+                <!-- Menu Superior -->
+                <div class="menu-superior">
+                    <a href="#" onclick="voltarParaCadastro()">Área de Cadastro</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
 
-            <section id="graficos" class="secaoInterna">
-                <h3>Gráficos</h3>
-                <canvas id="grafico"></canvas>
-            </section>
+                <!-- Conteúdo do Dashboard -->
+                <div class="dashboard-content">
+                    <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>
+                    <div class="dashboard-options">
+                        <div class="option" onclick="acessarCurso('Física')">
+                            <i class="fas fa-atom"></i>
+                            <p>Lições de Física</p>
+                        </div>
+                        <div class="option" onclick="acessarCurso('Matemática')">
+                            <i class="fas fa-calculator"></i>
+                            <p>Lições de Matemática</p>
+                        </div>
+                        <div class="option" onclick="acessarBancoQuestoes()">
+                            <i class="fas fa-book"></i>
+                            <p>Banco de Questões</p>
+                        </div>
+                        <div class="option" onclick="acessarBiblioteca()">
+                            <i class="fas fa-book-open"></i>
+                            <p>Biblioteca de Aulas</p>
+                        </div>
+                        <div class="option" onclick="acessarGrupoTurma()">
+                            <i class="fas fa-users"></i>
+                            <p>Grupo da Turma</p>
+                        </div>
+                        <div class="option" onclick="acessarAlunos()">
+                            <i class="fas fa-user-graduate"></i>
+                            <p>Alunos</p>
+                        </div>
+                    </div>
 
-            <section id="biblioteca" class="secaoInterna">
-                <h3>Biblioteca</h3>
-                <!-- Conteúdo da biblioteca -->
-            </section>
+                    <!-- Painel Gráfico -->
+                    <div class="painel-grafico">
+                        <h2>Painel do Aluno</h2>
+                        <div class="status-pagamento">
+                            <span>Data da Matrícula: <strong id="dataMatricula">01/05/2025</strong></span>
+                            <span>Status: <span class="ativo">● Ativo</span></span>
+                        </div>
+                        <div class="grafico-mensalidades">
+                            <canvas id="graficoMensalidades"></canvas>
+                        </div>
+                        <div class="gerar-boleto">
+                            <button onclick="gerarBoleto()">Gerar Boleto</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <section id="bancoQuestoes" class="secaoInterna">
-                <h3>Banco de Questões</h3>
-                <!-- Conteúdo do banco de questões -->
-            </section>
+            <!-- Dashboard do Administrador -->
+            <div class="admin-dashboard" id="adminDashboard">
+                <h1>Painel do Administrador</h1>
+                <div class="lista-alunos" id="listaAlunos">
+                    <!-- Lista de alunos será preenchida dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <section id="grupoTurma" class="secaoInterna">
-                <h3>Grupo da Turma</h3>
-                <!-- Conteúdo do grupo da turma -->
-            </section>
+    <!-- Pop-up para Copiar ID -->
+    <div class="popup" id="popup">
+        <p>Seu ID de acesso: <span id="popupID"></span></p>
+        <p style="color: #e74c3c; font-size: 0.9rem;">Guarde seu ID em local seguro!</p>
+        <button onclick="copiarID()">Copiar ID</button>
+        <button onclick="fecharPopup()">Fechar</button>
+    </div>
 
-            <section id="gerenciarAlunos" class="secaoInterna">
-                <h3>Gerenciar Alunos</h3>
-                <ul id="listaAlunos">
-                    <!-- Lista de alunos será carregada aqui -->
-                </ul>
-            </section>
-        </section>
-
-        <section id="dashboardAluno" class="secao">
-            <h2>Dashboard do Aluno</h2>
-            <section id="notificacoesAluno">
-                <h3>Notificações</h3>
-                <ul id="listaNotificacoesAluno">
-                    <!-- Lista de notificações será carregada aqui -->
-                </ul>
-            </section>
-
-            <section id="arquivosDisponiveis">
-                <h3>Arquivos Disponíveis</h3>
-                <ul id="listaArquivosAluno">
-                    <!-- Lista de arquivos disponíveis será carregada aqui -->
-                </ul>
-            </section>
-
-            <section id="progressoAluno">
-                <h3>Progresso</h3>
-                <canvas id="graficoProgresso"></canvas>
-            </section>
-        </section>
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/script.js"></script>
+    <!-- Rodapé -->
+    <footer>
+        <p>@Copyright 2025 - Plínio Studio</p>
+    </footer>
+    <script src="script.js"></script>
 </body>
 </html>
