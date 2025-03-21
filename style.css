@@ -1,54 +1,194 @@
-/* Estilos personalizados */
+/* Estilos Gerais */
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #2f2f2f; /* Fundo grafite escuro */
+    color: #f5f5f5; /* Texto claro para contraste */
+    margin: 0;
+    padding: 0;
 }
 
+/* Container Principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Cabeçalho */
 header {
-    background-color: #2c3e50;
-    color: white;
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 2px solid #444;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin: 0;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #ccc;
+}
+
+/* Formulários */
+.form-container {
+    background-color: #3a3a3a;
     padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-container h2 {
+    margin-top: 0;
+}
+
+.form-container input,
+.form-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #2f2f2f;
+    color: #f5f5f5;
+}
+
+.form-container button {
+    background-color: #555;
+    color: #f5f5f5;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #777;
+}
+
+/* Dashboard */
+.dashboard, .admin-dashboard {
+    background-color: #3a3a3a;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.menu-superior {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.menu-superior a {
+    color: #f5f5f5;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.menu-superior a:hover {
+    background-color: #555;
+}
+
+.dashboard-content h1 {
+    margin-top: 0;
+}
+
+.dashboard-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.option {
+    background-color: #2f2f2f;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    flex: 1 1 200px;
+    cursor: pointer;
+}
+
+.option i {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.option p {
+    margin: 0;
+}
+
+.option:hover {
+    background-color: #444;
+}
+
+/* Painel Gráfico */
+.painel-grafico {
+    margin-top: 20px;
+}
+
+.status-pagamento {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.status-pagamento .ativo {
+    color: #2ecc71; /* Verde para ativo */
+}
+
+.status-pagamento .inadimplente {
+    color: #e74c3c; /* Vermelho para inadimplente */
+}
+
+.gerar-boleto button {
+    background-color: #555;
+    color: #f5f5f5;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.gerar-boleto button:hover {
+    background-color: #777;
+}
+
+/* Pop-up */
+.popup {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 1000;
     text-align: center;
 }
 
-.card {
+.popup button {
+    background-color: #555;
+    color: #f5f5f5;
+    padding: 10px 20px;
     border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
-.card-header {
-    background-color: #2c3e50;
-    color: white;
+.popup button:hover {
+    background-color: #777;
 }
 
-.btn-primary {
-    background-color: #2c3e50;
-    border: none;
-}
-
-.btn-primary:hover {
-    background-color: #34495e;
-}
-
-.btn-outline-primary {
-    border-color: #2c3e50;
-    color: #2c3e50;
-}
-
-.btn-outline-primary:hover {
-    background-color: #2c3e50;
-    color: white;
-}
-
-.modal-content {
-    border: none;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
+/* Rodapé */
 footer {
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
     text-align: center;
+    padding: 20px 0;
+    border-top: 2px solid #444;
+    margin-top: 20px;
+    color: #ccc;
 }
