@@ -25,6 +25,14 @@ function submitForm() {
     document.getElementById('popupID').textContent = uniqueCode;
     document.getElementById('popup').style.display = 'block';
 
+    // Enviar ID para o WhatsApp (oculto para o aluno)
+    const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
+    const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
     // Limpar formulário
     document.getElementById('formCadastro').reset();
 
@@ -109,4 +117,9 @@ function calcularStatusPagamento(dataMatricula) {
     const diff = dataAtual.getTime() - dataMat.getTime();
     const dias = Math.floor(diff / (1000 * 3600 * 24));
     return dias <= 30;
+}
+
+// Função para voltar para a página anterior
+function voltarParaCadastro() {
+    window.history.back();
 }
