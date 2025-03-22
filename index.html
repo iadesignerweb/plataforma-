@@ -90,14 +90,28 @@
                             <button onclick="gerarBoleto()">Gerar Boleto</button>
                         </div>
                     </div>
+
+                    <!-- Notificações -->
+                    <div class="notificacoes-aluno">
+                        <i class="fas fa-bell notificacao-icon"></i>
+                        <div id="listaNotificacoes"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Dashboard do Administrador -->
             <div class="admin-dashboard" id="adminDashboard">
                 <h1>Painel do Administrador</h1>
-                <div class="lista-alunos" id="listaAlunos">
-                    <!-- Lista de alunos será preenchida dinamicamente -->
+                <div class="lista-alunos" id="listaAlunos"></div>
+                
+                <!-- Upload de arquivos -->
+                <div class="upload-area">
+                    <input type="file" id="arquivo" accept=".pdf,.docx,.jpg,.png">
+                    <select id="alunosSelecionados" multiple>
+                        <option value="todos">Todos os alunos</option>
+                    </select>
+                    <button onclick="uploadArquivo()">Enviar para Aluno</button>
+                    <span id="statusUpload"></span>
                 </div>
             </div>
         </div>
