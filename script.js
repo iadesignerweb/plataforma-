@@ -1,68 +1,93 @@
-// Função para gerar código único
-function generateUniqueCode() {
-    return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-}
-
 // Função para cadastrar aluno
 function submitForm() {
-    const nome = document.getElementById('nome').value;
-    const idade = document.getElementById('idade').value;
-    const descricao = document.getElementById('descricao').value;
+    const nome = document.getElementById('nome').value.trim();
+    const idade = document.getElementById('idade').value.trim();
+    const descricao = document.getElementById('descricao').value.trim();
 
-    // Gerar código único
-    const uniqueCode = generateUniqueCode();
+    if (!nome || !idade || !descricao) {
+        alert("Preencha todos os campos!");
+        return false;
+    }
 
-    // Armazenar dados no localStorage
-    const formData = {
-        nome: nome,
-        idade: idade,
-        descricao: descricao,
-        dataMatricula: new Date().toLocaleDateString('pt-BR'),
-        bloqueado: false,
-        inadimplente: false
+    const uniqueID = 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+    const aluno = {
+        nome,
+        idade,
+        descricao,
+        dataMatricula: new Date().toLocaleDateString('pt-BR')
     };
-    localStorage.setItem(uniqueCode, JSON.stringify(formData));
 
-    // Exibir pop-up com o ID de acesso
-    document.getElementById('popupID').textContent = uniqueCode;
+    localStorage.setItem(uniqueID, JSON.stringify(aluno));
+
+    // Exibir popup com ID
+    document.getElementById('popupID').textContent = uniqueID;
     document.getElementById('popup').style.display = 'block';
-
-    // Enviar ID para o WhatsApp (oculto para o aluno)
-    const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
-    const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
 
     // Limpar formulário
     document.getElementById('formCadastro').reset();
-
-    // Atualizar a lista de alunos no painel do administrador
-    carregarListaAlunos();
-
-    return false;
+    
+    return false; // Evita recarregar a página
 }
 
-// Função para copiar o ID
-function copiarID() {
-    const id = document.getElementById('popupID').textContent;
-    navigator.clipboard.writeText(id).then(() => {
-        alert('ID copiado para a área de transferência!');
-    });
-}
-
-// Função para fechar o popup manualmente
+// Função para fechar o popup
 function fecharPopup() {
     document.getElementById('popup').style.display = 'none';
 }
 
-// Função para fazer login
+// Função para copiar ID
+function copiarID() {
+    const id = document.getElementById('popupID').textContent;
+    navigator.clipboard.writeText(id).then(() => alert("ID copiado!"));
+}
+
+// Função para login
 function login() {
     const loginID = document.getElementById('loginID').value.trim();
-    const formData = localStorage.getItem(loginID);
 
-    if (loginID === '1316') {
-        localStorage.setItem('isAdmin', 'true');
+    if (loginID === '1316') { // Login administrativo
         document.getElementById('cadastroArea').style.display = 'none';
-        document.getElementById('loginArea').style.display
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        carregarListaAlunos();
+        return;
+    }
+
+    const alunoData = localStorage.getItem(loginID);
+    
+    if (alunoData) { // Login do aluno
+        const aluno = JSON.parse(alunoData);
+        document.getElementById('dashboardNome').textContent = aluno.nome;
+        document.getElementById('cadastroArea').style.display = 'none';
+        document.getElementById('loginArea').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        return;
+    }
+
+    alert("ID inválido!");
+}
+
+// Função para carregar lista de alunos no painel administrativo
+function carregarListaAlunos() {
+    const listaAlunos = document.getElementById('listaAlunos');
+    
+    listaAlunos.innerHTML = '';
+    
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        
+        if (key.startsWith('ALUNO-')) {
+            const aluno = JSON.parse(localStorage.getItem(key));
+            
+            const divAluno = document.createElement('div');
+            divAluno.textContent = `${aluno.nome} (${key})`;
+            
+            listaAlunos.appendChild(divAluno);
+        }
+    }
+}
+
+// Função para logout
+function logout() {
+    location.reload(); // Recarrega a página para limpar o estado atual
+}
