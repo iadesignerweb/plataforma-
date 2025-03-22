@@ -1,64 +1,84 @@
-// Função para gerar código único
-function generateUniqueCode() {
-    return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+/* Área administrativa */
+.admin-dashboard {
+    padding: 20px;
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
-// Função para cadastrar aluno
-function submitForm() {
-    const nome = document.getElementById('nome').value;
-    const idade = document.getElementById('idade').value;
-    const descricao = document.getElementById('descricao').value;
-
-    // Gerar código único
-    const uniqueCode = generateUniqueCode();
-
-    // Armazenar dados no localStorage
-    const formData = {
-        nome: nome,
-        idade: idade,
-        descricao: descricao,
-        dataMatricula: new Date().toLocaleDateString('pt-BR')
-    };
-    localStorage.setItem(uniqueCode, JSON.stringify(formData));
-
-    // Exibir pop-up com o ID de acesso
-    document.getElementById('popupID').textContent = uniqueCode;
-    document.getElementById('popup').style.display = 'block';
-
-    // Enviar ID para o WhatsApp (oculto para o aluno)
-    const mensagem = `Novo cadastro!\nNome: ${nome}\nID de Acesso: ${uniqueCode}`;
-    const url = `https://wa.me/5587999786261?text=${encodeURIComponent(mensagem)}`;
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-
-    // Limpar formulário
-    document.getElementById('formCadastro').reset();
-
-    // Atualizar a lista de alunos no painel do administrador
-    carregarListaAlunos();
-
-    return false;
+.aluno-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
 }
 
-// Função para copiar o ID
-function copiarID() {
-    const id = document.getElementById('popupID').textContent;
-    navigator.clipboard.writeText(id).then(() => {
-        alert('ID copiado para a área de transferência!');
-    });
+.aluno-item .controles {
+    display: flex;
+    gap: 10px;
 }
 
-// Função para fechar o popup manualmente
-function fecharPopup() {
-    document.getElementById('popup').style.display = 'none';
+.btn-admin {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-// Função para fazer login
-function login() {
-    const loginID = document.getElementById('loginID').value.trim();
-    const formData = localStorage.getItem(loginID);
+.btn-admin.bloquear {
+    background-color: #e74c3c;
+    color: white;
+}
 
-    if (loginID === '1316') {
-        document.getElementById('cadastroArea').style.display =
+.btn-admin.desbloquear {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-admin.excluir {
+    background-color: #2c3e50;
+    color: white;
+}
+
+.upload-area {
+    margin-top: 20px;
+    padding: 15px;
+    background: #ecf0f1;
+    border-radius: 10px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#alunosSelecionados {
+    min-width: 200px;
+    padding: 5px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+/* Dashboard do aluno - Notificações */
+.dashboard-content {
+    position: relative;
+}
+
+.notificacao-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: #e74c3c;
+    cursor: pointer;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
