@@ -63,6 +63,6 @@ function login() {
     const formData = localStorage.getItem(loginID);
 
     if (loginID === '1316') {
-        localStorage.setItem('isAdmin', 'true'); // Correção aqui
+        localStorage.setItem('isAdmin', 'true');
         document.getElementById('cadastroArea').style.display = 'none';
-        document
+        document.getElementById('loginArea').style.display
