@@ -1,84 +1,93 @@
-/* Área administrativa */
-.admin-dashboard {
-    padding: 20px;
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+// Função para carregar lista de alunos
+function carregarListaAlunos() {
+    const listaAlunos = document.getElementById('listaAlunos');
+    listaAlunos.innerHTML = '';
+    
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        
+        if (key.startsWith('ALUNO-')) {
+            const aluno = JSON.parse(localStorage.getItem(key));
+            
+            const divAluno = document.createElement('div');
+            divAluno.className = 'aluno-item';
+            divAluno.innerHTML = `
+                <div class="info-aluno">
+                    <h3>${aluno.nome}</h3>
+                    <p>ID: ${key}</p>
+                    <p>Matrícula: ${aluno.dataMatricula}</p>
+                </div>
+                <div class="controles">
+                    <button class="btn-admin bloquear" onclick="bloquearAluno('${key}')">Bloquear</button>
+                    <button class="btn-admin desbloquear" onclick="desbloquearAluno('${key}')">Desbloquear</button>
+                    <button class="btn-admin excluir" onclick="excluirAluno('${key}')">Excluir</button>
+                </div>
+            `;
+            listaAlunos.appendChild(divAluno);
+            
+            // Preencher select de alunos
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = `${aluno.nome} (${key})`;
+            document.getElementById('alunosSelecionados').appendChild(option);
+        }
+    }
 }
 
-.aluno-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
+// Funções de controle de alunos
+function bloquearAluno(id) {
+    const aluno = JSON.parse(localStorage.getItem(id));
+    aluno.bloqueado = true;
+    localStorage.setItem(id, JSON.stringify(aluno));
+    carregarListaAlunos();
 }
 
-.aluno-item .controles {
-    display: flex;
-    gap: 10px;
+function desbloquearAluno(id) {
+    const aluno = JSON.parse(localStorage.getItem(id));
+    aluno.bloqueado = false;
+    localStorage.setItem(id, JSON.stringify(aluno));
+    carregarListaAlunos();
 }
 
-.btn-admin {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+function excluirAluno(id) {
+    localStorage.removeItem(id);
+    carregarListaAlunos();
 }
 
-.btn-admin.bloquear {
-    background-color: #e74c3c;
-    color: white;
+// Upload de arquivos
+function uploadArquivo() {
+    const arquivo = document.getElementById('arquivo').files[0];
+    const alunosSelecionados = document.getElementById('alunosSelecionados');
+    const selecionados = Array.from(alunosSelecionados.selectedOptions).map(opt => opt.value);
+    
+    if (!arquivo) {
+        alert('Selecione um arquivo!');
+        return;
+    }
+    
+    // Simular envio de arquivo (para implementar backend)
+    const mensagem = `Arquivo enviado para ${selecionados.join(', ')}`;
+    document.getElementById('statusUpload').textContent = mensagem;
+    document.getElementById('arquivo').value = '';
 }
 
-.btn-admin.desbloquear {
-    background-color: #27ae60;
-    color: white;
+// Notificações no dashboard do aluno
+function atualizarNotificacoes() {
+    const notificacoes = document.getElementById('listaNotificacoes');
+    notificacoes.innerHTML = '';
+    
+    // Simular notificações (para implementar backend)
+    const notificacao = document.createElement('div');
+    notificacao.className = 'notificacao';
+    notificacao.innerHTML = `
+        <i class="fas fa-bell"></i>
+        <p>Nova avaliação disponível!</p>
+    `;
+    notificacoes.appendChild(notificacao);
 }
 
-.btn-admin.excluir {
-    background-color: #2c3e50;
-    color: white;
-}
-
-.upload-area {
-    margin-top: 20px;
-    padding: 15px;
-    background: #ecf0f1;
-    border-radius: 10px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-#alunosSelecionados {
-    min-width: 200px;
-    padding: 5px;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-}
-
-/* Dashboard do aluno - Notificações */
-.dashboard-content {
-    position: relative;
-}
-
-.notificacao-icon {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 1.5rem;
-    color: #e74c3c;
-    cursor: pointer;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+// Adicione no login do aluno
+function login() {
+    // ... (código original) ...
+    atualizarNotificacoes();
 }
