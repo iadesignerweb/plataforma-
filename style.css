@@ -1,12 +1,303 @@
-/* Mantendo o CSS original e adicionando novos estilos */
-/* ... (cole aqui todo o CSS original) ... */
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-/* Área administrativa */
-.admin-dashboard {
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     padding: 20px;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeIn 1s ease-in-out;
+    flex: 1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    animation: slideDown 0.5s ease-in-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.2rem;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+    border-color: #3498db;
+}
+
+textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
+}
+
+.dashboard {
+    display: none;
+    width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.menu-superior {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    padding: 10px 20px;
+    color: white;
+    animation: slideDown 0.5s ease-in-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+.menu-superior a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: opacity 0.3s ease;
+}
+
+.menu-superior a:hover {
+    opacity: 0.8;
+}
+
+.dashboard-content {
+    padding: 20px;
+    position: relative; /* Posição relativa para o ícone de notificação */
+}
+
+.dashboard-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
     background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.option {
+    background-color: #ecf0f1;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.option i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #3498db;
+}
+
+.option p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.painel-grafico {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.painel-grafico h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.status-pagamento {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.status-pagamento span {
+    font-size: 1rem;
+    color: #555;
+}
+
+.status-pagamento .ativo {
+    color: #27ae60;
+}
+
+.status-pagamento .inadimplente {
+    color: #e74c3c;
+}
+
+.gerar-boleto {
+    margin-top: 20px;
+}
+
+.gerar-boleto button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.gerar-boleto button:hover {
+    background-color: #2980b9;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.popup p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.popup button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.popup button:hover {
+    background-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+    .dashboard-options {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+.admin-dashboard {
+    display: none;
+    width: 100%;
+    padding: 20px;
+}
+
+.admin-dashboard h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.lista-alunos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .aluno-item {
@@ -14,55 +305,99 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
-}
-
-.aluno-item .controles {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-admin {
-    padding: 5px 10px;
+    background-color: #ecf0f1;
     border-radius: 5px;
-    border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.btn-admin.bloquear {
-    background-color: #e74c3c;
-    color: white;
+.aluno-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.btn-admin.desbloquear {
+.aluno-item span {
+    font-size: 1rem;
+    color: #555;
+}
+
+.aluno-item .status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.aluno-item .status.ativo {
     background-color: #27ae60;
-    color: white;
 }
 
-.btn-admin.excluir {
+.aluno-item .status.inadimplente {
+    background-color: #e74c3c;
+}
+
+.contagem-regressiva {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
     background-color: #2c3e50;
     color: white;
+    width: 100%;
+    margin-top: auto;
 }
 
-.upload-area {
-    margin-top: 20px;
+footer p {
+    font-size: 0.9rem;
+}
+
+/* Novas funcionalidades */
+.dashboard-options {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.option {
+    background-color: #fff;
+    padding: 20px;
+    border: 2px solid #dee2e6;
+}
+
+.option:hover {
+    border-color: #3498db;
+}
+
+.admin-dashboard {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.aluno-item {
+    background: white;
     padding: 15px;
-    background: #ecf0f1;
-    border-radius: 10px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-#alunosSelecionados {
-    min-width: 200px;
-    padding: 5px;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
+.aluno-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.painel-grafico {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.status-pagamento {
+    background: #e9ecef;
+    border-radius: 8px;
+    padding: 10px;
 }
 
 /* Dashboard do aluno - Notificações */
