@@ -43,7 +43,7 @@ header {
 
 @keyframes slideDown {
     from { transform: translateY(-100%); }
-    to { opacity: 1; transform: translateY(0); }
+    to { transform: translateY(0); }
 }
 
 header h1 {
@@ -151,7 +151,6 @@ button:hover {
 
 .dashboard-content {
     padding: 20px;
-    position: relative; /* Posição relativa para o ícone de notificação */
 }
 
 .dashboard-options {
@@ -159,10 +158,6 @@ button:hover {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .option {
@@ -351,72 +346,4 @@ footer {
 
 footer p {
     font-size: 0.9rem;
-}
-
-/* Novas funcionalidades */
-.dashboard-options {
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
-
-.option {
-    background-color: #fff;
-    padding: 20px;
-    border: 2px solid #dee2e6;
-}
-
-.option:hover {
-    border-color: #3498db;
-}
-
-.admin-dashboard {
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
-
-.aluno-item {
-    background: white;
-    padding: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.aluno-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
-
-.painel-grafico {
-    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
-
-.status-pagamento {
-    background: #e9ecef;
-    border-radius: 8px;
-    padding: 10px;
-}
-
-/* Dashboard do aluno - Notificações */
-.dashboard-content {
-    position: relative;
-}
-
-.notificacao-icon {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 1.5rem;
-    color: #e74c3c;
-    cursor: pointer;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
 }
