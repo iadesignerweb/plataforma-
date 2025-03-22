@@ -4,9 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plataforma de Cursos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+        }
+
+        header p {
+            font-size: 1rem;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .form-container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: calc(100%);
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin: 5px; /* Adicionado espaçamento entre os botões */
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .dashboard-options, .lista-alunos {
+            margin-top: 20px;
+        }
+
+        .aluno-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f8f8;
+            margin-bottom: 5px; /* Adicionado espaçamento entre os itens */
+            border-radius: 5px;
+        }
+
+        .aluno-item button {
+            width: auto; /* Ajustado para o tamanho do texto */
+            padding: 5px 10px; /* Reduzido o padding */
+            font-size: 0.8rem; /* Reduzido o tamanho da fonte */
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -33,74 +130,122 @@
             </div>
 
             <div class="dashboard" id="dashboard">
-                <div class="menu-superior">
-                    <a href="#" onclick="voltarParaCadastro()">Voltar</a>
-                    <a href="#" onclick="logout()">Logout</a>
-                </div>
-
-                <div class="dashboard-content">
-                    <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>
-                    <div class="dashboard-options">
-                        <div class="option" onclick="acessarCurso('Física')">
-                            <i class="fas fa-atom"></i>
-                            <p>Lições de Física</p>
-                        </div>
-                        <div class="option" onclick="acessarCurso('Matemática')">
-                            <i class="fas fa-calculator"></i>
-                            <p>Lições de Matemática</p>
-                        </div>
-                        <div class="option" onclick="acessarBancoQuestoes()">
-                            <i class="fas fa-book"></i>
-                            <p>Banco de Questões</p>
-                        </div>
-                        <div class="option" onclick="acessarBiblioteca()">
-                            <i class="fas fa-book-open"></i>
-                            <p>Biblioteca de Aulas</p>
-                        </div>
-                        <div class="option" onclick="acessarGrupoTurma()">
-                            <i class="fas fa-users"></i>
-                            <p>Grupo da Turma</p>
-                        </div>
-                        <div class="option" onclick="acessarAlunos()">
-                            <i class="fas fa-user-graduate"></i>
-                            <p>Alunos</p>
-                        </div>
-                    </div>
-
-                    <div class="painel-grafico">
-                        <h2>Painel do Aluno</h2>
-                        <div class="status-pagamento">
-                            <span>Data da Matrícula: <strong id="dataMatricula">01/05/2025</strong></span>
-                            <span>Status: <span class="ativo">● Ativo</span></span>
-                        </div>
-                        <div class="grafico-mensalidades">
-                            <canvas id="graficoMensalidades"></canvas>
-                        </div>
-                        <div class="gerar-boleto">
-                            <button onclick="gerarBoleto()">Gerar Boleto</button>
-                        </div>
-                    </div>
-                </div>
+                <!-- Conteúdo do Dashboard -->
             </div>
 
             <div class="admin-dashboard" id="adminDashboard">
-                <h1>Painel do Administrador</h1>
+                <h2>Painel do Administrador</h2>
                 <div class="lista-alunos" id="listaAlunos">
+                    <!-- Lista de alunos será preenchida aqui -->
                 </div>
+                <button onclick="uploadArquivo()">Upload de Arquivo</button>
             </div>
         </div>
     </div>
 
-    <div class="popup" id="popup">
-        <p>Seu ID de acesso: <span id="popupID"></span></p>
-        <p style="color: #e74c3c; font-size: 0.9rem;">Guarde seu ID em local seguro!</p>
-        <button onclick="copiarID()">Copiar ID</button>
-        <button onclick="fecharPopup()">Fechar</button>
-    </div>
+    <script>
+        // Função para gerar código único
+        function generateUniqueCode() {
+            return 'ALUNO-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
 
-    <footer>
-        <p>@Copyright 2025 - Plínio Studio</p>
-    </footer>
-    <script src="script.js"></script>
+        // Função para cadastrar aluno
+        function submitForm() {
+            const nome = document.getElementById('nome').value;
+            const idade = document.getElementById('idade').value;
+            const descricao = document.getElementById('descricao').value;
+
+            const uniqueCode = generateUniqueCode();
+
+            const formData = {
+                nome: nome,
+                idade: idade,
+                descricao: descricao
+            };
+
+            localStorage.setItem(uniqueCode, JSON.stringify(formData));
+
+            alert('Aluno cadastrado com o ID: ' + uniqueCode);
+
+            document.getElementById('formCadastro').reset();
+
+            carregarListaAlunos();
+
+            return false;
+        }
+
+        // Função para fazer login
+        function login() {
+            const loginID = document.getElementById('loginID').value;
+
+            if (loginID === 'admin') {
+                document.getElementById('cadastroArea').style.display = 'none';
+                document.getElementById('loginArea').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                carregarListaAlunos();
+            } else {
+                const alunoData = localStorage.getItem(loginID);
+                if (alunoData) {
+                    alert('Login bem-sucedido para o aluno: ' + loginID);
+                    document.getElementById('cadastroArea').style.display = 'none';
+                    document.getElementById('loginArea').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('adminDashboard').style.display = 'none';
+                } else {
+                    alert('ID inválido.');
+                }
+            }
+        }
+
+        // Função para carregar lista de alunos no painel do administrador
+        function carregarListaAlunos() {
+            const listaAlunos = document.getElementById('listaAlunos');
+            listaAlunos.innerHTML = '';
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key !== 'admin') {
+                    const alunoData = localStorage.getItem(key);
+                    if (alunoData) {
+                        const aluno = JSON.parse(alunoData);
+                        const alunoItem = document.createElement('div');
+                        alunoItem.className = 'aluno-item';
+                        alunoItem.innerHTML = `
+                            <span>${aluno.nome} - ID: ${key}</span>
+                            <button onclick="bloquearAluno('${key}')">Bloquear</button>
+                            <button onclick="desbloquearAluno('${key}')">Desbloquear</button>
+                            <button onclick="excluirAluno('${key}')">Excluir</button>
+                        `;
+                        listaAlunos.appendChild(alunoItem);
+                    }
+                }
+            }
+        }
+
+        // Funções para bloquear, desbloquear e excluir aluno
+        function bloquearAluno(id) {
+            alert('Aluno bloqueado: ' + id);
+            // Adicione a lógica para bloquear o aluno
+        }
+
+        function desbloquearAluno(id) {
+            alert('Aluno desbloqueado: ' + id);
+            // Adicione a lógica para desbloquear o aluno
+        }
+
+        function excluirAluno(id) {
+            alert('Aluno excluído: ' + id);
+            localStorage.removeItem(id);
+            carregarListaAlunos();
+            // Adicione a lógica para excluir o aluno
+        }
+
+        // Função para upload de arquivo
+        function uploadArquivo() {
+            alert('Upload de arquivo para o aluno');
+            // Adicione a lógica para upload de arquivo
+        }
+    </script>
 </body>
 </html>
