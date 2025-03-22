@@ -74,7 +74,7 @@ function login() {
         document.getElementById('loginArea').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
 
-        //renderizarGraficoMensalidades(data.dataMatricula);
+        renderizarGraficoMensalidades(data.dataMatricula);
     } else {
         alert('ID de acesso inválido!');
     }
