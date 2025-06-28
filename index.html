@@ -1,120 +1,192 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Cursos</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Chart.js para gráficos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YT Otimizador • Plínio Fabrício</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #2c2c2c, #3a1c71, #d76d77, #ffaf7b);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 2.5rem;
+      margin-top: 30px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      background-color: #2f2f2f;
+      color: #fff;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: linear-gradient(90deg, #8e2de2, #4a00e0);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #4a00e0, #8e2de2);
+    }
+
+    .result, .creditos {
+      background-color: rgba(25, 25, 25, 0.9);
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      background-color: #1c1c1c;
+      color: #b6fcd5;
+      padding: 10px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+
+    #whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    #whatsapp-float img {
+      width: 60px;
+      height: 60px;
+    }
+
+    .logo-container {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .logo-container img {
+      width: 60px;
+    }
+
+    .icon {
+      width: 18px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Cabeçalho -->
-        <header>
-            <h1>Plataforma de Cursos</h1>
-            <p>Seu portal para o conhecimento</p>
-        </header>
+  <div class="logo-container">
+    <img src="https://raw.githubusercontent.com/iadesignerweb/site/refs/heads/main/file_000000006f3861f88e745af94277ef55.png" alt="Logo">
+  </div>
 
-        <!-- Conteúdo Principal -->
-        <div class="main-content">
-            <!-- Área de Cadastro -->
-            <div class="form-container" id="cadastroArea">
-                <h2>Cadastro de Aluno</h2>
-                <form id="formCadastro" onsubmit="return submitForm()">
-                    <input type="text" id="nome" placeholder="Digite seu nome" required>
-                    <input type="number" id="idade" placeholder="Digite sua idade" required>
-                    <textarea id="descricao" placeholder="Descreva-se brevemente..." required></textarea>
-                    <button type="submit">Cadastrar</button>
-                </form>
-            </div>
+  <h1>Plínio Studio</h1>
+  <p>Cole o link de um vídeo público do YouTube e clique em "Analisar":</p>
+  <input type="text" id="videoUrl" placeholder="Cole aqui o link do vídeo..." />
+  <button onclick="analisarVideo()">Analisar</button>
 
-            <!-- Área de Login -->
-            <div class="form-container" id="loginArea">
-                <h2>Login do Aluno</h2>
-                <input type="text" id="loginID" placeholder="Digite seu ID de acesso">
-                <button onclick="login()">Entrar</button>
-            </div>
+  <div id="output" class="result" style="display: none;">
+    <h2>Resultado da Análise</h2>
+    <p><strong>Thumbnail:</strong></p>
+    <img id="thumb" src="" style="max-width: 100%; border-radius: 8px;" />
+    <p><strong>Título original:</strong> <span id="titulo"></span></p>
+    <p><strong>Descrição original:</strong></p>
+    <textarea id="descricaoOriginal"></textarea>
+    <p><strong>Título sugerido:</strong> <span id="tituloOtimizado"></span></p>
+    <p><strong>Descrição sugerida:</strong></p>
+    <textarea id="descSugestao"></textarea>
+    <p><strong>Tags sugeridas:</strong></p>
+    <textarea id="tags"></textarea>
+  </div>
 
-            <!-- Dashboard do Aluno -->
-            <div class="dashboard" id="dashboard">
-                <!-- Menu Superior -->
-                <div class="menu-superior">
-                    <a href="#" onclick="voltarParaCadastro()">Área de Cadastro</a>
-                    <a href="#" onclick="logout()">Logout</a>
-                </div>
+  <div class="creditos">
+    <h3>
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="white"><path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-7V7a6 6 0 1 0-12 0v3H4v14h16V10h-2zm-8 0V7a4 4 0 1 1 8 0v3H10z"/></svg>
+      Limite Gratuito
+    </h3>
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="white"><path d="M20.285 2l-11.285 11.293-5.285-5.293-3.715 3.707 9 9 15-15z"/></svg>
+      Plano PRO (R$ 10): até 15 vídeos/mês + prioridade + atualizações futuras.
+    </p>
+    <a href="https://wa.me/5587999786261?text=Quero%20o%20Plano%20PRO%20da%20ferramenta%20YT%20Otimizador" target="_blank">
+      <button style="margin-top: 10px; background: linear-gradient(90deg, #ff6a00, #ee0979); color: white;">Falar com Plínio no WhatsApp</button>
+    </a>
+    <p style="font-size: 0.8rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="white"><path d="M13 2v2h-2v-2h2zm6.364 1.636l1.414 1.414-1.414 1.414-1.414-1.414 1.414-1.414zM20 11h2v2h-2v-2zM4 11H2v2h2v-2zm1.636-6.364L7.05 6.05 5.636 7.464 4.222 6.05 5.636 4.636zM12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
+      Em breve: desbloqueio automático com Mercado Pago.
+    </p>
+  </div>
 
-                <!-- Conteúdo do Dashboard -->
-                <div class="dashboard-content">
-                    <h1>Bem-vindo, <span id="dashboardNome"></span>!</h1>
-                    <div class="dashboard-options">
-                        <div class="option" onclick="acessarCurso('Física')">
-                            <i class="fas fa-atom"></i>
-                            <p>Lições de Física</p>
-                        </div>
-                        <div class="option" onclick="acessarCurso('Matemática')">
-                            <i class="fas fa-calculator"></i>
-                            <p>Lições de Matemática</p>
-                        </div>
-                        <div class="option" onclick="acessarBancoQuestoes()">
-                            <i class="fas fa-book"></i>
-                            <p>Banco de Questões</p>
-                        </div>
-                        <div class="option" onclick="acessarBiblioteca()">
-                            <i class="fas fa-book-open"></i>
-                            <p>Biblioteca de Aulas</p>
-                        </div>
-                        <div class="option" onclick="acessarGrupoTurma()">
-                            <i class="fas fa-users"></i>
-                            <p>Grupo da Turma</p>
-                        </div>
-                        <div class="option" onclick="acessarAlunos()">
-                            <i class="fas fa-user-graduate"></i>
-                            <p>Alunos</p>
-                        </div>
-                    </div>
+  <a href="https://wa.me/5587999786261" target="_blank" id="whatsapp-float">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+  </a>
 
-                    <!-- Painel Gráfico -->
-                    <div class="painel-grafico">
-                        <h2>Painel do Aluno</h2>
-                        <div class="status-pagamento">
-                            <span>Data da Matrícula: <strong id="dataMatricula">01/05/2025</strong></span>
-                            <span>Status: <span class="ativo">● Ativo</span></span>
-                        </div>
-                        <div class="grafico-mensalidades">
-                            <canvas id="graficoMensalidades"></canvas>
-                        </div>
-                        <div class="gerar-boleto">
-                            <button onclick="gerarBoleto()">Gerar Boleto</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <footer>
+    © 2025 • Plínio Fabrício • Ferramenta de Análise Estratégica de Vídeos YouTube
+  </footer>
 
-            <!-- Dashboard do Administrador -->
-            <div class="admin-dashboard" id="adminDashboard">
-                <h1>Painel do Administrador</h1>
-                <div class="lista-alunos" id="listaAlunos">
-                    <!-- Lista de alunos será preenchida dinamicamente -->
-                </div>
-            </div>
-        </div>
-    </div>
+  <script>
+    async function analisarVideo() {
+      const url = document.getElementById("videoUrl").value;
+      const apiUrl = `http://localhost:3000/analisar?url=${encodeURIComponent(url)}`;
 
-    <!-- Pop-up para Copiar ID -->
-    <div class="popup" id="popup">
-        <p>Seu ID de acesso: <span id="popupID"></span></p>
-        <p style="color: #e74c3c; font-size: 0.9rem;">Guarde seu ID em local seguro!</p>
-        <button onclick="copiarID()">Copiar ID</button>
-        <button onclick="fecharPopup()">Fechar</button>
-    </div>
+      try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
 
-    <!-- Rodapé -->
-    <footer>
-        <p>@Copyright 2025 - Plínio Studio</p>
-    </footer>
-    <script src="script.js"></script>
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+
+        document.getElementById("output").style.display = "block";
+        document.getElementById("thumb").src = data.thumbnail;
+        document.getElementById("titulo").textContent = data.tituloOriginal;
+        document.getElementById("descricaoOriginal").value = data.descricaoOriginal;
+        document.getElementById("tituloOtimizado").textContent = data.tituloSugerido;
+        document.getElementById("descSugestao").value = data.descricaoSugerida;
+        document.getElementById("tags").value = data.tagsSugeridas;
+      } catch (error) {
+        alert("Erro ao conectar com o servidor local. Verifique se o backend está ativo.");
+        console.error(error);
+      }
+    }
+  </script>
 </body>
 </html>
