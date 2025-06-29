@@ -1,191 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YT Otimizador • Plínio Fabrício</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plínio Stúdio • Gerador Cinematográfico</title>
   <style>
     body {
-      background: linear-gradient(135deg, #2c2c2c, #3a1c71, #d76d77, #ffaf7b);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
-      color: #f0f0f0;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    h1 {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
       color: #ffffff;
-      text-align: center;
-      font-size: 2.5rem;
-      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
     }
-
-    input[type="text"] {
+    header {
+      padding: 1rem;
+      font-size: 1.8rem;
+      color: #9d7bff;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 600px;
+      width: 90%;
+      background: #111;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(157, 123, 255, 0.2);
+    }
+    label, select, input, textarea {
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 10px;
+      margin: 10px 0;
       font-size: 1rem;
-      background-color: #2f2f2f;
-      color: #fff;
     }
-
+    textarea {
+      height: 200px;
+      resize: none;
+    }
     button {
-      padding: 12px 20px;
-      background: linear-gradient(90deg, #8e2de2, #4a00e0);
+      background: #9d7bff;
       border: none;
-      border-radius: 8px;
-      color: #fff;
+      padding: 10px 20px;
+      color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s ease;
+      border-radius: 6px;
     }
-
-    button:hover {
-      background: linear-gradient(90deg, #4a00e0, #8e2de2);
-    }
-
-    .result, .creditos {
-      background-color: rgba(25, 25, 25, 0.9);
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-
-    textarea {
-      width: 100%;
-      height: 150px;
-      background-color: #1c1c1c;
-      color: #b6fcd5;
-      padding: 10px;
-      border: 1px solid #555;
-      border-radius: 8px;
-      font-family: monospace;
-      margin-top: 10px;
-    }
-
+    .hidden { display: none; }
     footer {
-      margin-top: 40px;
-      text-align: center;
+      margin-top: 2rem;
       font-size: 0.9rem;
-      color: #ddd;
-    }
-
-    #whatsapp-float {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 100;
-    }
-
-    #whatsapp-float img {
-      width: 60px;
-      height: 60px;
-    }
-
-    .logo-container {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-    }
-
-    .logo-container img {
-      width: 60px;
-    }
-
-    .icon {
-      width: 18px;
-      vertical-align: middle;
-      margin-right: 8px;
+      color: #777;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div class="logo-container">
-    <img src="https://raw.githubusercontent.com/iadesignerweb/site/refs/heads/main/file_000000006f3861f88e745af94277ef55.png" alt="Logo">
+  <header>🔒 Plínio Stúdio • Gerador Cinematográfico</header>
+
+  <div class="container" id="login">
+    <p>Este conteúdo é exclusivo para usuários premium. Insira a senha de acesso:</p>
+    <input type="password" id="senha" placeholder="Digite a senha...">
+    <button onclick="verificarSenha()">Acessar</button>
   </div>
 
-  <h1>Plínio Studio</h1>
-  <p>Cole o link de um vídeo público do YouTube e clique em "Analisar":</p>
-  <input type="text" id="videoUrl" placeholder="Cole aqui o link do vídeo..." />
-  <button onclick="analisarVideo()">Analisar</button>
+  <div class="container hidden" id="gerador">
+    <p><strong>Tutorial:</strong> Escolha um estilo, digite uma frase em português e clique em "Gerar" para obter o prompt cinematográfico completo.</p>
+    <label for="estilo">Estilo de Vídeo:</label>
+    <select id="estilo">
+      <option value="biblical">Bíblico Cinematográfico</option>
+      <option value="epic">Épico / Trailer</option>
+      <option value="adoracao">Adoração / Contemporâneo</option>
+      <option value="acao">Ação Espiritual</option>
+      <option value="anime">Anime Estilizado</option>
+      <option value="futurista">Futurista Profético</option>
+    </select>
 
-  <div id="output" class="result" style="display: none;">
-    <h2>Resultado da Análise</h2>
-    <p><strong>Thumbnail:</strong></p>
-    <img id="thumb" src="" style="max-width: 100%; border-radius: 8px;" />
-    <p><strong>Título original:</strong> <span id="titulo"></span></p>
-    <p><strong>Descrição original:</strong></p>
-    <textarea id="descricaoOriginal"></textarea>
-    <p><strong>Título sugerido:</strong> <span id="tituloOtimizado"></span></p>
-    <p><strong>Descrição sugerida:</strong></p>
-    <textarea id="descSugestao"></textarea>
-    <p><strong>Tags sugeridas:</strong></p>
-    <textarea id="tags"></textarea>
+    <label for="fala">Fala em Português:</label>
+    <input type="text" id="fala" placeholder="Ex: Com minha voz eu te levanto">
+
+    <button onclick="gerarPrompt()">Gerar Prompt</button>
+
+    <label for="resultado">Prompt Gerado:</label>
+    <textarea id="resultado" readonly></textarea>
   </div>
-
-  <div class="creditos">
-    <h3>
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="white"><path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-7V7a6 6 0 1 0-12 0v3H4v14h16V10h-2zm-8 0V7a4 4 0 1 1 8 0v3H10z"/></svg>
-      Limite Gratuito
-    </h3>
-    <p>
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="white"><path d="M20.285 2l-11.285 11.293-5.285-5.293-3.715 3.707 9 9 15-15z"/></svg>
-      Plano PRO (R$ 10): até 15 vídeos/mês + prioridade + atualizações futuras.
-    </p>
-    <a href="https://wa.me/5587999786261?text=Quero%20o%20Plano%20PRO%20da%20ferramenta%20YT%20Otimizador" target="_blank">
-      <button style="margin-top: 10px; background: linear-gradient(90deg, #ff6a00, #ee0979); color: white;">Falar com Plínio no WhatsApp</button>
-    </a>
-    <p style="font-size: 0.8rem;">
-      <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="white"><path d="M13 2v2h-2v-2h2zm6.364 1.636l1.414 1.414-1.414 1.414-1.414-1.414 1.414-1.414zM20 11h2v2h-2v-2zM4 11H2v2h2v-2zm1.636-6.364L7.05 6.05 5.636 7.464 4.222 6.05 5.636 4.636zM12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
-      Em breve: desbloqueio automático com Mercado Pago.
-    </p>
-  </div>
-
-  <a href="https://wa.me/5587999786261" target="_blank" id="whatsapp-float">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
-  </a>
 
   <footer>
-    © 2025 • Plínio Fabrício • Ferramenta de Análise Estratégica de Vídeos YouTube
+    © Plínio Stúdio 2034 • Feito com amor.💜🍀
   </footer>
 
   <script>
-    async function analisarVideo() {
-      const url = document.getElementById("videoUrl").value;
-      const apiUrl = `http://localhost:3000/analisar?url=${encodeURIComponent(url)}`;
-
-      try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-
-        document.getElementById("output").style.display = "block";
-        document.getElementById("thumb").src = data.thumbnail;
-        document.getElementById("titulo").textContent = data.tituloOriginal;
-        document.getElementById("descricaoOriginal").value = data.descricaoOriginal;
-        document.getElementById("tituloOtimizado").textContent = data.tituloSugerido;
-        document.getElementById("descSugestao").value = data.descricaoSugerida;
-        document.getElementById("tags").value = data.tagsSugeridas;
-      } catch (error) {
-        alert("Erro ao conectar com o servidor local. Verifique se o backend está ativo.");
-        console.error(error);
+    function verificarSenha() {
+      const senha = document.getElementById('senha').value;
+      if (senha === 'pliniopremium') {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('gerador').classList.remove('hidden');
+      } else {
+        alert('Senha incorreta. Acesso negado.');
       }
+    }
+
+    function gerarPrompt() {
+      const estilo = document.getElementById('estilo').value;
+      const fala = document.getElementById('fala').value.trim();
+
+      if (!fala) {
+        alert('Por favor, digite uma fala.');
+        return;
+      }
+
+      let prompt = '';
+
+      switch (estilo) {
+        case 'biblical':
+          prompt = `A young woman in biblical attire from the time of Jesus stands at dawn in a field of olive trees. She wears a light linen tunic, earth-toned mantle, and semi-transparent veil. The camera pushes in slowly (dolly-in). She sings: “${fala}” in perfect Brazilian Portuguese, with precise lip sync, subtle vibrato, and spiritual expression.\n\nVisual style: 4K, golden hour light, anamorphic lens, cinematic film grain.\nMood: sacred, divine connection, spiritual awakening.`;
+          break;
+        case 'epic':
+          prompt = `Cinematic trailer style. Intense close-ups, sweeping drone shots over ancient lands. Epic soundtrack. A character declares in powerful Brazilian Portuguese: “${fala}” with slow-motion lip sync.\n\nVisual style: 4K, dramatic lighting, fast cuts, cinematic LUT.\nMood: powerful, dramatic, heroic.`;
+          break;
+        case 'adoracao':
+          prompt = `A worship singer stands alone in a dimly lit room or natural landscape. The camera orbits softly. She sings “${fala}” in Brazilian Portuguese, lip sync accurate and emotional.\n\nVisual style: soft light, shallow depth, 4K.\nMood: intimate, reverent, peaceful.`;
+          break;
+        case 'acao':
+          prompt = `A prophet runs through stone streets under pursuit. Tense handheld camera. He turns and cries: “${fala}” in Brazilian Portuguese, with urgent tone and lip sync.\n\nVisual style: handheld, motion blur, 4K.\nMood: intense, divine resistance.`;
+          break;
+        case 'anime':
+          prompt = `Anime-style scene. A glowing sky. A young hero shouts “${fala}” in Portuguese, lips perfectly synced. Hair blows in wind, tears glisten.\n\nVisual style: HD anime cel shading, dramatic lighting, vivid expression.\nMood: emotional, heroic, poetic.`;
+          break;
+        case 'futurista':
+          prompt = `Sci-fi prophet in neon-lit ruins. Holograms flicker. She looks up and says: “${fala}” in Portuguese, with calm lip sync and resonance.\n\nVisual style: 4K, cyberpunk, glitch overlays, soft lens.\nMood: prophetic, mysterious, spiritual.`;
+          break;
+      }
+
+      document.getElementById('resultado').value = prompt;
     }
   </script>
 </body>
