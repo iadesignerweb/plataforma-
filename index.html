@@ -67,7 +67,7 @@
   </div>
 
   <div class="container hidden" id="gerador">
-    <p><strong>Tutorial:</strong> Escolha um estilo, digite uma frase em português e clique em "Gerar" para obter o prompt cinematográfico completo.</p>
+    <p><strong>Tutorial:</strong> Escolha um estilo, digite uma frase em português e clique em "Gerar" para obter o prompt cinematográfico completo. O prompt será gerado na estrutura aceita por IA's geradoras de imagens. Traduza o prompt para o português, faça as alterações de acordo com a imagem a ser gerada. Traduza novamente para o inglês, copie e cole na IA de sua preferência.</p>
     <label for="estilo">Estilo de Vídeo:</label>
     <select id="estilo">
       <option value="biblical">Bíblico Cinematográfico</option>
@@ -77,12 +77,9 @@
       <option value="anime">Anime Estilizado</option>
       <option value="futurista">Futurista Profético</option>
     </select>
-
     <label for="fala">Fala em Português:</label>
     <input type="text" id="fala" placeholder="Ex: Com minha voz eu te levanto">
-
     <button onclick="gerarPrompt()">Gerar Prompt</button>
-
     <label for="resultado">Prompt Gerado:</label>
     <textarea id="resultado" readonly></textarea>
   </div>
@@ -91,10 +88,53 @@
     © Plínio Stúdio 2025 • Direitos Reservados.
   </footer>
 
+  <!-- POPUP TUTORIAL -->
+  <div id="popupTutorial" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999;">
+    <div style="background: white; color: #333; border-radius: 12px; max-width: 500px; padding: 2rem; box-shadow: 0 0 30px rgba(157, 123, 255, 0.3); text-align: center; font-family: 'Segoe UI', sans-serif;">
+      <h2 style="color: #7e44bf;">👋 Bem-vindo ao Gerador Cinematográfico</h2>
+      <p>🎬 Crie prompts prontos para vídeos com estilo cinematográfico e IA.</p>
+      <p>🔁 <strong>Acesso gratuito:</strong> 1 geração por dia (a cada 24 horas).</p>
+      <p>💎 <strong>Acesso ilimitado:</strong> R$ 20,00/mês — desbloqueie o gerador sempre que quiser.</p>
+      <a href="https://biolivre.com.br/iagencialoja" target="_blank" style="display: inline-block; margin: 1rem 0; background: #7e44bf; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-decoration: none;">💸 Acessar Premium via IA Gencialoja</a>
+      <br />
+      <button onclick="fecharPopup()" style="margin-top: 1.5rem; background: #444; color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;">Entendi, continuar</button>
+    </div>
+  </div>
+
   <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const hoje = new Date().toDateString();
+      const visto = localStorage.getItem("tutorialVisto");
+      if (visto !== hoje) {
+        document.getElementById("popupTutorial").style.display = "flex";
+      }
+    });
+
+    function fecharPopup() {
+      const hoje = new Date().toDateString();
+      localStorage.setItem("tutorialVisto", hoje);
+      document.getElementById("popupTutorial").style.display = "none";
+    }
+
     function verificarSenha() {
-      const senha = document.getElementById('senha').value;
-      if (senha === 'pliniopremium') {
+      const senha = document.getElementById('senha').value.trim();
+      const agora = new Date().getTime();
+      const ultimaEntrada = localStorage.getItem('acessoPlinio');
+      const vinteQuatroHoras = 24 * 60 * 60 * 1000;
+
+      if (senha === 'admin123') {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('gerador').classList.remove('hidden');
+        return;
+      }
+
+      if (senha === 'transforma') {
+        if (ultimaEntrada && agora - parseInt(ultimaEntrada) < vinteQuatroHoras) {
+          const horasRestantes = Math.ceil((vinteQuatroHoras - (agora - parseInt(ultimaEntrada))) / 3600000);
+          alert(`Acesso já foi usado. Tente novamente em aproximadamente ${horasRestantes} hora(s).`);
+          return;
+        }
+        localStorage.setItem('acessoPlinio', agora);
         document.getElementById('login').classList.add('hidden');
         document.getElementById('gerador').classList.remove('hidden');
       } else {
@@ -105,14 +145,11 @@
     function gerarPrompt() {
       const estilo = document.getElementById('estilo').value;
       const fala = document.getElementById('fala').value.trim();
-
       if (!fala) {
         alert('Por favor, digite uma fala.');
         return;
       }
-
       let prompt = '';
-
       switch (estilo) {
         case 'biblical':
           prompt = `A young woman in biblical attire from the time of Jesus stands at dawn in a field of olive trees. She wears a light linen tunic, earth-toned mantle, and semi-transparent veil. The camera pushes in slowly (dolly-in). She sings: “${fala}” in perfect Brazilian Portuguese, with precise lip sync, subtle vibrato, and spiritual expression.\n\nVisual style: 4K, golden hour light, anamorphic lens, cinematic film grain.\nMood: sacred, divine connection, spiritual awakening.`;
@@ -133,7 +170,6 @@
           prompt = `Sci-fi prophet in neon-lit ruins. Holograms flicker. She looks up and says: “${fala}” in Portuguese, with calm lip sync and resonance.\n\nVisual style: 4K, cyberpunk, glitch overlays, soft lens.\nMood: prophetic, mysterious, spiritual.`;
           break;
       }
-
       document.getElementById('resultado').value = prompt;
     }
   </script>
