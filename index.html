@@ -3,105 +3,573 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plínio Stúdio • Gerador Cinematográfico</title>
+  <title>Plínio Stúdio • Gerador Cinematográfico IA</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
     }
-    header {
-      padding: 1rem;
-      font-size: 1.8rem;
-      color: #9d7bff;
-      font-weight: bold;
+
+    :root {
+      --primary: #7c3aed;
+      --secondary: #a855f7;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-dark: #0c0c0f;
+      --bg-secondary: #161620;
+      --bg-card: rgba(22, 22, 32, 0.9);
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
+      --text-secondary: #71717a;
+      --border: rgba(113, 113, 122, 0.2);
+      --border-hover: rgba(124, 58, 237, 0.3);
+      --gradient: linear-gradient(135deg, #7c3aed, #a855f7, #3b82f6);
+      --gradient-subtle: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.1));
     }
-    .container {
-      max-width: 600px;
-      width: 90%;
-      background: #111;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 30px rgba(157, 123, 255, 0.2);
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
     }
-    label, select, input, textarea {
+
+    /* Animated Background */
+    .bg-animated {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      margin: 10px 0;
-      font-size: 1rem;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(-45deg, #0c0c0f, #161620, #1e1b4b, #161620);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
     }
-    textarea {
-      height: 200px;
-      resize: none;
+
+    .bg-animated::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
     }
-    button {
-      background: #9d7bff;
-      border: none;
-      padding: 10px 20px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 6px;
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
-    .hidden { display: none; }
-    footer {
-      margin-top: 2rem;
-      font-size: 0.9rem;
-      color: #777;
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(1deg); }
+      66% { transform: translateY(15px) rotate(-1deg); }
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      padding: 2rem 1rem;
       text-align: center;
+      background: rgba(12, 12, 15, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      animation: glow 2s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.3));
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.3)); }
+      to { filter: drop-shadow(0 0 25px rgba(124, 58, 237, 0.6)); }
+    }
+
+    /* Container */
+    .main-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      transition: left 0.5s;
+    }
+
+    .card:hover::before {
+      left: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 35px 60px -12px rgba(124, 58, 237, 0.4),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border-color: var(--border-hover);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(22, 22, 32, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      background: rgba(22, 22, 32, 0.95);
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      background: var(--gradient);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.5),
+                  0 10px 10px -5px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(113, 113, 122, 0.15);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(113, 113, 122, 0.25);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+      border-color: var(--border-hover);
+    }
+
+    /* Tutorial Section */
+    .tutorial {
+      background: var(--gradient-subtle);
+      border: 1px solid var(--border-hover);
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .tutorial::before {
+      content: '💡';
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: var(--bg-dark);
+      padding: 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .tutorial h3 {
+      margin-bottom: 1rem;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .tutorial p {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Popup */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .popup {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      max-width: 500px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+
+    .popup h2 {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    .popup p {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+      .pricing-highlight {
+        background: var(--gradient-subtle);
+        border: 1px solid var(--border-hover);
+        padding: 1rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+      }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Status indicators */
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .status-indicator.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* Utilities */
+    .hidden { display: none !important; }
+    
+    .text-center { text-align: center; }
+    
+    .mb-2 { margin-bottom: 1rem; }
+    
+    .flex { display: flex; }
+    
+    .gap-2 { gap: 1rem; }
+    
+    .justify-center { justify-content: center; }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+      background: rgba(12, 12, 15, 0.8);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 0 0.5rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .logo {
+        font-size: 2rem;
+      }
+      
+      .popup {
+        margin: 1rem;
+        padding: 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <header>Gerador de Imagem Cinematográfica</header>
+  <div class="bg-animated"></div>
+  
+  <header>
+    <div class="logo">
+      <i class="fas fa-video"></i> Plínio Stúdio
+    </div>
+    <div class="subtitle">Gerador Cinematográfico Powered by IA</div>
+  </header>
 
-  <div class="container" id="login">
-    <p>Este conteúdo é exclusivo para usuários premium. Insira a senha de acesso:</p>
-    <input type="password" id="senha" placeholder="Digite a senha...">
-    <button onclick="verificarSenha()">Acessar</button>
-  </div>
+  <div class="main-container">
+    <!-- Login Card -->
+    <div class="card" id="login">
+      <div class="status-indicator warning">
+        <i class="fas fa-lock"></i>
+        Conteúdo Premium
+      </div>
+      <h2 style="margin-bottom: 1rem; color: var(--text);">
+        <i class="fas fa-key"></i> Acesso Exclusivo
+      </h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">
+        Este conteúdo é exclusivo para usuários premium. Insira sua senha de acesso para continuar.
+      </p>
+      
+      <div class="form-group">
+        <label for="senha">
+          <i class="fas fa-shield-alt"></i> Senha de Acesso
+        </label>
+        <input 
+          type="password" 
+          id="senha" 
+          placeholder="Digite sua senha premium..."
+          onkeypress="if(event.key==='Enter') verificarSenha()"
+        >
+      </div>
+      
+      <button class="btn" onclick="verificarSenha()">
+        <i class="fas fa-unlock"></i>
+        Acessar Gerador
+      </button>
+    </div>
 
-  <div class="container hidden" id="gerador">
-    <p><strong>Tutorial:</strong> Escolha um estilo, digite uma frase em português e clique em "Gerar" para obter o prompt cinematográfico completo. O prompt será gerado na estrutura aceita por IA's geradoras de imagens. Traduza o prompt para o português, faça as alterações de acordo com a imagem a ser gerada. Traduza novamente para o inglês, copie e cole na IA de sua preferência.</p>
-    <label for="estilo">Estilo de Vídeo:</label>
-    <select id="estilo">
-      <option value="biblical">Bíblico Cinematográfico</option>
-      <option value="epic">Épico / Trailer</option>
-      <option value="adoracao">Adoração / Contemporâneo</option>
-      <option value="acao">Ação Espiritual</option>
-      <option value="anime">Anime Estilizado</option>
-      <option value="futurista">Futurista Profético</option>
-    </select>
-    <label for="fala">Fala em Português:</label>
-    <input type="text" id="fala" placeholder="Ex: Com minha voz eu te levanto">
-    <button onclick="gerarPrompt()">Gerar Prompt</button>
-    <label for="resultado">Prompt Gerado:</label>
-    <textarea id="resultado" readonly></textarea>
-  </div>
+    <!-- Generator Card -->
+    <div class="card hidden" id="gerador">
+      <div class="status-indicator">
+        <i class="fas fa-check-circle"></i>
+        Acesso Liberado
+      </div>
 
-  <footer>
-    © Plínio Stúdio 2025 • Direitos Reservados.
-  </footer>
+      <div class="tutorial">
+        <h3><i class="fas fa-lightbulb"></i> Como Funciona</h3>
+        <p>
+          1. Escolha um estilo cinematográfico<br>
+          2. Digite sua frase em português<br>
+          3. Clique em "Gerar" para obter o prompt completo<br>
+          4. Use o prompt em qualquer IA geradora de vídeos
+        </p>
+      </div>
 
-  <!-- POPUP TUTORIAL -->
-  <div id="popupTutorial" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999;">
-    <div style="background: white; color: #333; border-radius: 12px; max-width: 500px; padding: 2rem; box-shadow: 0 0 30px rgba(157, 123, 255, 0.3); text-align: center; font-family: 'Segoe UI', sans-serif;">
-      <h2 style="color: #7e44bf;">👋 Bem-vindo ao Gerador Cinematográfico</h2>
-      <p>🎬 Crie prompts prontos para vídeos com estilo cinematográfico e IA.</p>
-      <p>🔁 <strong>Acesso gratuito:</strong> 1 geração por dia (a cada 24 horas).</p>
-      <p>💎 <strong>Acesso ilimitado:</strong> R$ 20,00/mês — desbloqueie o gerador sempre que quiser.</p>
-      <a href="https://biolivre.com.br/iagencialoja" target="_blank" style="display: inline-block; margin: 1rem 0; background: #7e44bf; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-decoration: none;">💸 Acessar Premium via IA Gencialoja</a>
-      <br />
-      <button onclick="fecharPopup()" style="margin-top: 1.5rem; background: #444; color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;">Entendi, continuar</button>
+      <div class="form-group">
+        <label for="estilo">
+          <i class="fas fa-film"></i> Estilo Cinematográfico
+        </label>
+        <select id="estilo">
+          <option value="biblical">🕊️ Bíblico Cinematográfico</option>
+          <option value="epic">⚡ Épico / Trailer</option>
+          <option value="adoracao">🙏 Adoração / Contemporâneo</option>
+          <option value="acao">🗡️ Ação Espiritual</option>
+          <option value="anime">🎌 Anime Estilizado</option>
+          <option value="futurista">🚀 Futurista Profético</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="fala">
+          <i class="fas fa-microphone"></i> Texto em Português
+        </label>
+        <input 
+          type="text" 
+          id="fala" 
+          placeholder="Ex: Com minha voz eu te levanto"
+          onkeypress="if(event.key==='Enter') gerarPrompt()"
+        >
+      </div>
+
+      <div class="flex gap-2 justify-center mb-2">
+        <button class="btn" onclick="gerarPrompt()">
+          <i class="fas fa-magic"></i>
+          Gerar Prompt
+        </button>
+        <button class="btn btn-secondary" onclick="copiarPrompt()">
+          <i class="fas fa-copy"></i>
+          Copiar
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label for="resultado">
+          <i class="fas fa-code"></i> Prompt Gerado
+        </label>
+        <textarea 
+          id="resultado" 
+          readonly 
+          placeholder="Seu prompt cinematográfico aparecerá aqui..."
+        ></textarea>
+      </div>
     </div>
   </div>
 
+  <!-- Popup Tutorial -->
+  <div class="popup-overlay" id="popupTutorial">
+    <div class="popup">
+      <h2>
+        <i class="fas fa-rocket"></i> Bem-vindo ao Futuro
+      </h2>
+      <p>🎬 Crie prompts cinematográficos profissionais com inteligência artificial avançada.</p>
+      
+      <div class="pricing-highlight">
+        <p><strong>🆓 Acesso Gratuito:</strong> 1 geração a cada 24 horas</p>
+        <p><strong>💎 Premium Ilimitado:</strong> R$ 20,00/mês</p>
+      </div>
+
+      <div class="flex gap-2 justify-center">
+        <a href="https://biolivre.com.br/iagencialoja" target="_blank" class="btn">
+          <i class="fas fa-crown"></i>
+          Upgrade Premium
+        </a>
+        <button class="btn btn-secondary" onclick="fecharPopup()">
+          <i class="fas fa-play"></i>
+          Começar Grátis
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>
+      <i class="fas fa-copyright"></i> 2025 Plínio Stúdio • Todos os direitos reservados
+    </div>
+    <div style="margin-top: 0.5rem;">
+      Powered by Advanced AI Technology
+    </div>
+  </footer>
+
   <script>
+    // Show tutorial popup on first visit
     window.addEventListener("DOMContentLoaded", () => {
       const hoje = new Date().toDateString();
       const visto = localStorage.getItem("tutorialVisto");
@@ -122,56 +590,159 @@
       const ultimaEntrada = localStorage.getItem('acessoPlinio');
       const vinteQuatroHoras = 24 * 60 * 60 * 1000;
 
+      // Admin access
       if (senha === 'admin123') {
         document.getElementById('login').classList.add('hidden');
         document.getElementById('gerador').classList.remove('hidden');
+        showNotification('Acesso administrativo liberado!', 'success');
         return;
       }
 
+      // Free access with 24h limit
       if (senha === 'transforma') {
         if (ultimaEntrada && agora - parseInt(ultimaEntrada) < vinteQuatroHoras) {
           const horasRestantes = Math.ceil((vinteQuatroHoras - (agora - parseInt(ultimaEntrada))) / 3600000);
-          alert(`Acesso já foi usado. Tente novamente em aproximadamente ${horasRestantes} hora(s).`);
+          showNotification(`Acesso já foi usado hoje. Próximo acesso em ${horasRestantes}h`, 'warning');
           return;
         }
         localStorage.setItem('acessoPlinio', agora);
         document.getElementById('login').classList.add('hidden');
         document.getElementById('gerador').classList.remove('hidden');
+        showNotification('Acesso liberado! Aproveite sua geração gratuita.', 'success');
       } else {
-        alert('Senha incorreta. Acesso negado.');
+        showNotification('Senha incorreta. Verifique suas credenciais.', 'error');
       }
     }
 
     function gerarPrompt() {
       const estilo = document.getElementById('estilo').value;
       const fala = document.getElementById('fala').value.trim();
+      
       if (!fala) {
-        alert('Por favor, digite uma fala.');
+        showNotification('Por favor, digite um texto para gerar o prompt.', 'warning');
         return;
       }
-      let prompt = '';
-      switch (estilo) {
-        case 'biblical':
-          prompt = `A young woman in biblical attire from the time of Jesus stands at dawn in a field of olive trees. She wears a light linen tunic, earth-toned mantle, and semi-transparent veil. The camera pushes in slowly (dolly-in). She sings: “${fala}” in perfect Brazilian Portuguese, with precise lip sync, subtle vibrato, and spiritual expression.\n\nVisual style: 4K, golden hour light, anamorphic lens, cinematic film grain.\nMood: sacred, divine connection, spiritual awakening.`;
-          break;
-        case 'epic':
-          prompt = `Cinematic trailer style. Intense close-ups, sweeping drone shots over ancient lands. Epic soundtrack. A character declares in powerful Brazilian Portuguese: “${fala}” with slow-motion lip sync.\n\nVisual style: 4K, dramatic lighting, fast cuts, cinematic LUT.\nMood: powerful, dramatic, heroic.`;
-          break;
-        case 'adoracao':
-          prompt = `A worship singer stands alone in a dimly lit room or natural landscape. The camera orbits softly. She sings “${fala}” in Brazilian Portuguese, lip sync accurate and emotional.\n\nVisual style: soft light, shallow depth, 4K.\nMood: intimate, reverent, peaceful.`;
-          break;
-        case 'acao':
-          prompt = `A prophet runs through stone streets under pursuit. Tense handheld camera. He turns and cries: “${fala}” in Brazilian Portuguese, with urgent tone and lip sync.\n\nVisual style: handheld, motion blur, 4K.\nMood: intense, divine resistance.`;
-          break;
-        case 'anime':
-          prompt = `Anime-style scene. A glowing sky. A young hero shouts “${fala}” in Portuguese, lips perfectly synced. Hair blows in wind, tears glisten.\n\nVisual style: HD anime cel shading, dramatic lighting, vivid expression.\nMood: emotional, heroic, poetic.`;
-          break;
-        case 'futurista':
-          prompt = `Sci-fi prophet in neon-lit ruins. Holograms flicker. She looks up and says: “${fala}” in Portuguese, with calm lip sync and resonance.\n\nVisual style: 4K, cyberpunk, glitch overlays, soft lens.\nMood: prophetic, mysterious, spiritual.`;
-          break;
-      }
-      document.getElementById('resultado').value = prompt;
+
+      // Show loading
+      const btn = event.target;
+      const originalContent = btn.innerHTML;
+      btn.innerHTML = '<div class="loading"></div> Gerando...';
+      btn.disabled = true;
+
+      // Simulate AI processing
+      setTimeout(() => {
+        let prompt = gerarPromptPorEstilo(estilo, fala);
+        document.getElementById('resultado').value = prompt;
+        
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+        
+        showNotification('Prompt gerado com sucesso!', 'success');
+      }, 1500);
     }
+
+    function gerarPromptPorEstilo(estilo, fala) {
+      const templates = {
+        biblical: `A young woman in biblical attire from the time of Jesus stands at dawn in a field of olive trees. She wears a light linen tunic, earth-toned mantle, and semi-transparent veil. The camera pushes in slowly (dolly-in). She sings: "${fala}" in perfect Brazilian Portuguese, with precise lip sync, subtle vibrato, and spiritual expression.
+
+Visual style: 4K, golden hour light, anamorphic lens, cinematic film grain, divine rays.
+Mood: sacred, divine connection, spiritual awakening.
+Technical: Professional color grading, depth of field, atmospheric haze.`,
+
+        epic: `Cinematic trailer style. Intense close-ups, sweeping drone shots over ancient lands. Epic orchestral soundtrack building to crescendo. A powerful character declares in commanding Brazilian Portuguese: "${fala}" with dramatic slow-motion lip sync and heroic expression.
+
+Visual style: 4K, dramatic lighting, fast cuts, cinematic LUT, lens flares.
+Mood: powerful, dramatic, heroic, inspirational.
+Technical: Dynamic camera movement, color contrast, epic scale.`,
+
+        adoracao: `A worship singer stands alone in a softly lit sanctuary or natural landscape. Warm golden light filters through. The camera orbits gracefully around her. She sings "${fala}" in heartfelt Brazilian Portuguese, with accurate lip sync and deep emotional expression.
+
+Visual style: Soft natural light, shallow depth of field, 4K, warm tones.
+Mood: intimate, reverent, peaceful, worshipful.
+Technical: Smooth camera movement, bokeh effects, gentle color grading.`,
+
+        acao: `A determined prophet runs through ancient stone streets under divine pursuit. Intense handheld camera follows closely. He turns with fierce determination and cries: "${fala}" in urgent Brazilian Portuguese, with passionate tone and perfect lip sync.
+
+Visual style: Handheld camera, motion blur, 4K, high contrast.
+Mood: intense, divine resistance, spiritual warfare.
+Technical: Dynamic lighting, fast-paced editing, dramatic angles.`,
+
+        anime: `Anime-style scene with glowing ethereal sky and floating particles. A young hero with expressive eyes shouts "${fala}" in emotional Portuguese, lips perfectly synced. Hair flows dramatically in divine wind, tears glisten like crystals.
+
+Visual style: HD anime cel shading, dramatic lighting, vivid colors, particle effects.
+Mood: emotional, heroic, poetic, transcendent.
+Technical: Anime motion blur, speed lines, magical aura effects.`,
+
+        futurista: `Sci-fi prophet figure in neon-lit ruins of future Jerusalem. Holographic scriptures flicker around her. She looks up to the heavens and speaks: "${fala}" in calm yet powerful Portuguese, with perfect lip sync and ethereal resonance.
+
+Visual style: 4K, cyberpunk aesthetics, glitch overlays, neon lighting, soft lens.
+Mood: prophetic, mysterious, spiritual, futuristic.
+Technical: Digital effects, hologram simulation, atmospheric fog, lens aberration.`
+      };
+
+      return templates[estilo] || templates.biblical;
+    }
+
+    function copiarPrompt() {
+      const resultado = document.getElementById('resultado');
+      if (!resultado.value.trim()) {
+        showNotification('Nenhum prompt para copiar. Gere um primeiro!', 'warning');
+        return;
+      }
+
+      resultado.select();
+      document.execCommand('copy');
+      showNotification('Prompt copiado para a área de transferência!', 'success');
+    }
+
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+        backdrop-filter: blur(10px);
+      `;
+
+      const colors = {
+        success: 'background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(16, 185, 129, 0.4);',
+        warning: 'background: linear-gradient(135deg, #f59e0b, #d97706); border: 1px solid rgba(245, 158, 11, 0.4);',
+        error: 'background: linear-gradient(135deg, #ef4444, #dc2626); border: 1px solid rgba(239, 68, 68, 0.4);',
+        info: 'background: linear-gradient(135deg, #7c3aed, #a855f7); border: 1px solid rgba(124, 58, 237, 0.4);'
+      };
+
+      notification.style.cssText += colors[type];
+      notification.textContent = message;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+
+    // Add slide animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
