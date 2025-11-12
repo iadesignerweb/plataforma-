@@ -6,743 +6,306 @@
   <title>Plínio Stúdio • Gerador Cinematográfico IA</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ---------- Root & Fonts ---------- */
+    :root{
+      --bg-dark: #0b0b0d;
+      --card: rgba(18,18,24,0.86);
+      --accent: #f3c76b;
+      --muted: #bdbdbf;
+      --glass: rgba(255,255,255,0.03);
+      --film-grad: linear-gradient(90deg, rgba(0,0,0,0.6), rgba(0,0,0,0.15));
     }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:radial-gradient(1200px 800px at 10% 10%, rgba(124,58,237,0.06), transparent), var(--bg-dark); color:#fff; -webkit-font-smoothing:antialiased}
 
-    :root {
-      --primary: #7c3aed;
-      --secondary: #0c0c0f;
-      --accent: #3b82f6;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --error: #ef4444;
-      --bg-dark: #0c0c0f;
-      --bg-secondary: #161620;
-      --bg-card: rgba(22, 22, 32, 0.9);
-      --text: #ffffff;
-      --text-muted: #a1a1aa;
-      --text-secondary: #71717a;
-      --border: rgba(113, 113, 122, 0.2);
-      --border-hover: rgba(124, 58, 237, 0.3);
-      --gradient: linear-gradient(135deg, #7c3aed, #a855f7, #3b82f6);
-      --gradient-subtle: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.1));
-    }
+    /* ---------- 35mm Loader Overlay ---------- */
+    .loader-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;background:linear-gradient(180deg, rgba(7,7,9,0.95), rgba(7,7,9,0.85));backdrop-filter: blur(6px)}
+    .loader-card{width:min(820px,94%);padding:2.2rem;border-radius:18px;background:linear-gradient(180deg, rgba(10,10,14,0.8), rgba(15,15,20,0.55));border:1px solid rgba(255,255,255,0.03);box-shadow:0 20px 60px rgba(0,0,0,0.7);position:relative;overflow:hidden}
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-dark);
-      color: var(--text);
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
+    /* Film texture */
+    .loader-card::before{content:'';position:absolute;inset:-40% -20% auto -20%;height:220%;background:repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.00) 1px);mix-blend-mode:overlay;opacity:0.6;pointer-events:none}
+    .grain{pointer-events:none;position:absolute;inset:0;mix-blend-mode:overlay;opacity:0.18;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><filter id="g"><feTurbulence baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23g)" /></svg>')}
+    .vignette{position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 50%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%);pointer-events:none}
 
-    /* Animated Background */
-    .bg-animated {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background: linear-gradient(-45deg, #0c0c0f, #161620, #1e1b4b, #161620);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-    }
+    /* Scanline flicker */
+    .scanlines{position:absolute;inset:0;background-image:linear-gradient(transparent 92%, rgba(255,255,255,0.02) 93%);background-size:100% 4px;mix-blend-mode:overlay;opacity:0.45;pointer-events:none;animation:scan 3s linear infinite}
+    @keyframes scan{0%{transform:translateY(0)}100%{transform:translateY(-4px)}}
 
-    .bg-animated::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-      animation: float 20s ease-in-out infinite;
-    }
+    /* Loader content */
+    .loader-title{font-weight:800;font-size:1.6rem;letter-spacing:1px;color:var(--accent);text-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .loader-sub{color:var(--muted);margin-top:0.5rem;font-size:0.95rem}
 
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
+    .style-belt{display:flex;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap}
+    .style-pill{padding:.5rem .8rem;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.03);font-weight:700;font-size:.86rem;color:var(--muted)}
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-30px) rotate(1deg); }
-      66% { transform: translateY(15px) rotate(-1deg); }
-    }
+    .film-strip{margin-top:1.6rem;height:64px;border-radius:8px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;align-items:center;gap:1rem;padding:0.6rem 0.8rem}
+    .film-thumb{flex:0 0 86px;height:48px;background:linear-gradient(90deg, rgba(0,0,0,0.3), rgba(255,255,255,0.02));border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted)}
+    .film-meta{flex:1}
+    .film-meta p{margin:0;font-size:.92rem;color:var(--muted)}
 
-    /* Header */
-    header {
-      position: relative;
-      padding: 2rem 1rem;
-      text-align: center;
-      background: rgba(12, 12, 15, 0.95);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-    }
+    .loader-footer{display:flex;gap:1rem;align-items:center;justify-content:space-between;margin-top:1.2rem}
+    .loader-progress{flex:1;height:10px;border-radius:10px;background:rgba(255,255,255,0.03);overflow:hidden;margin-right:1rem}
+    .loader-progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#ffffff08,#ffffff22,#ffffff08);animation:progress 3.5s linear forwards}
+    @keyframes progress{to{width:100%}}
 
-    .logo {
-      font-size: 2.5rem;
-      font-weight: 800;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      animation: glow 2s ease-in-out infinite alternate;
-      filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.3));
-    }
+    .loader-small{font-size:0.85rem;color:var(--muted);font-weight:600}
 
-    .subtitle {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      font-weight: 400;
-      letter-spacing: 0.5px;
-    }
+    /* ---------- Main App (under loader) ---------- */
+    header{padding:2rem 1rem;text-align:center;position:relative}
+    .logo{font-size:2.2rem;font-weight:800;background:linear-gradient(90deg,#f3c76b,#ffd88a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .subtitle{color:var(--muted);margin-top:.3rem}
 
-    @keyframes glow {
-      from { filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.3)); }
-      to { filter: drop-shadow(0 0 25px rgba(124, 58, 237, 0.6)); }
-    }
+    .container{max-width:920px;margin:2rem auto;padding:0 1rem}
+    .card{background:var(--card);border-radius:18px;padding:2rem;border:1px solid rgba(255,255,255,0.03);box-shadow:0 25px 60px rgba(0,0,0,0.6)}
+    .row{display:flex;gap:1rem;align-items:center}
 
-    /* Container */
-    .main-container {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
+    label{display:block;margin-bottom:.6rem;font-weight:700;color:#fff}
+    input[type=text], textarea, select{width:100%;padding:1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#fff}
+    textarea{min-height:160px;font-family:inherit}
 
-    .card {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 2.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
+    .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 1.2rem;border-radius:10px;border:none;background:linear-gradient(90deg,#f3c76b,#ffd88a);color:#111;font-weight:800;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:700}
 
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-      transition: left 0.5s;
-    }
+    .styles-list{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.6rem}
+    .style{padding:.45rem .7rem;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-weight:700;color:var(--muted);cursor:pointer}
+    .style.active{background:linear-gradient(90deg,#f3c76b,#ffd88a);color:#111}
 
-    .card:hover::before {
-      left: 100%;
-    }
+    .result-box{margin-top:1rem;border-radius:10px;padding:1rem;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .result-box pre{white-space:pre-wrap;color:#fff;font-weight:600}
 
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 35px 60px -12px rgba(124, 58, 237, 0.4),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      border-color: var(--border-hover);
-    }
-
-    /* Forms */
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: var(--text);
-      font-size: 0.95rem;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 1rem;
-      background: rgba(22, 22, 32, 0.8);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
-      background: rgba(22, 22, 32, 0.95);
-    }
-
-    textarea {
-      min-height: 180px;
-      resize: vertical;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      background: var(--gradient);
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-      text-decoration: none;
-    }
-
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn:hover::before {
-      left: 100%;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.5),
-                  0 10px 10px -5px rgba(124, 58, 237, 0.3);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .btn-secondary {
-      background: rgba(113, 113, 122, 0.15);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(113, 113, 122, 0.25);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-      border-color: var(--border-hover);
-    }
-
-    /* Tutorial Section */
-    .tutorial {
-      background: var(--gradient-subtle);
-      border: 1px solid var(--border-hover);
-      padding: 1.5rem;
-      border-radius: 16px;
-      margin-bottom: 2rem;
-      position: relative;
-    }
-
-    .tutorial::before {
-      content: '💡';
-      position: absolute;
-      top: -10px;
-      left: 20px;
-      background: var(--bg-dark);
-      padding: 0 10px;
-      font-size: 1.2rem;
-    }
-
-    .tutorial h3 {
-      margin-bottom: 1rem;
-      color: var(--primary);
-      font-size: 1.1rem;
-    }
-
-    .tutorial p {
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    /* Popup */
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .popup {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      max-width: 500px;
-      padding: 2.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      text-align: center;
-      position: relative;
-      animation: slideUp 0.3s ease;
-    }
-
-    .popup h2 {
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
-
-    .popup p {
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      line-height: 1.6;
-    }
-
-      .pricing-highlight {
-        background: var(--gradient-subtle);
-        border: 1px solid var(--border-hover);
-        padding: 1rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-      }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    /* Status indicators */
-    .status-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 8px;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
-    .status-indicator.warning {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
-      border-color: rgba(245, 158, 11, 0.3);
-    }
-
-    /* Utilities */
-    .hidden { display: none !important; }
-    
-    .text-center { text-align: center; }
-    
-    .mb-2 { margin-bottom: 1rem; }
-    
-    .flex { display: flex; }
-    
-    .gap-2 { gap: 1rem; }
-    
-    .justify-center { justify-content: center; }
-
-    /* Loading animation */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      border-top: 1px solid var(--border);
-      margin-top: 4rem;
-      background: rgba(12, 12, 15, 0.8);
-      backdrop-filter: blur(10px);
-    }
+    .note{font-size:0.9rem;color:var(--muted);margin-top:.6rem}
 
     /* Responsive */
-    @media (max-width: 768px) {
-      .main-container {
-        padding: 0 0.5rem;
-      }
-      
-      .card {
-        padding: 1.5rem;
-      }
-      
-      .logo {
-        font-size: 2rem;
-      }
-      
-      .popup {
-        margin: 1rem;
-        padding: 2rem;
-      }
-    }
+    @media(max-width:720px){.row{flex-direction:column}.film-thumb{display:none}}
+
   </style>
 </head>
 <body>
-  <div class="bg-animated"></div>
-  
-  <header>
-    <div class="logo">
-      <i class="fas fa-video"></i> Plínio Stúdio
+  <!-- Loader Overlay (35mm film style) -->
+  <div class="loader-wrap" id="loader">
+    <div class="loader-card" role="dialog" aria-label="Tela de Inicialização Cinematográfica">
+      <div class="grain" aria-hidden="true"></div>
+      <div class="vignette" aria-hidden="true"></div>
+      <div class="scanlines" aria-hidden="true"></div>
+
+      <div style="position:relative;z-index:3">
+        <div class="loader-title"><i class="fa-solid fa-film"></i> Carregando o gerador cinematográfico IA...</div>
+        <div class="loader-sub">Aperfeiçoando sua ideia para prompts profissionais — modo 35mm</div>
+
+        <div class="style-belt" aria-hidden="true">
+          <div class="style-pill">Cinematográfico</div>
+          <div class="style-pill">Futurista</div>
+          <div class="style-pill">Realista</div>
+          <div class="style-pill">Estúdio Fotográfico</div>
+          <div class="style-pill">Dramático</div>
+          <div class="style-pill">Automático</div>
+        </div>
+
+        <div class="film-strip" aria-hidden="true">
+          <div class="film-thumb">35mm</div>
+          <div class="film-meta">
+            <p><strong>Gerador:</strong> Plínio Stúdio — Cinematic Prompt Engine</p>
+            <p style="margin-top:.25rem;color:var(--muted)">Exibe estilos variados enquanto o sistema calibra o prompt.</p>
+          </div>
+        </div>
+
+        <div class="loader-footer">
+          <div class="loader-progress" aria-hidden="true"><i></i></div>
+          <div class="loader-small">Pronto em instantes...</div>
+        </div>
+      </div>
     </div>
-    <div class="subtitle">Gerador Cinematográfico Powered by IA</div>
+  </div>
+
+  <!-- MAIN APP -->
+  <header>
+    <div class="logo"><i class="fa-solid fa-video"></i> Plínio Stúdio</div>
+    <div class="subtitle">Gerador Cinematográfico - modo 35mm</div>
   </header>
 
-  <div class="main-container">
+  <main class="container">
     <!-- Login Card -->
-    <div class="card" id="login">
-      <div class="status-indicator warning">
-        <i class="fas fa-lock"></i>
-        Conteúdo Premium
-      </div>
-      <h2 style="margin-bottom: 1rem; color: var(--text);">
-        <i class="fas fa-key"></i> Acesso Exclusivo
-      </h2>
-      <p style="color: var(--text-muted); margin-bottom: 2rem;">
-        Este conteúdo é exclusivo para usuários premium. Insira sua senha de acesso para continuar.
-      </p>
-      
-      <div class="form-group">
-        <label for="senha">
-          <i class="fas fa-shield-alt"></i> Senha de Acesso
-        </label>
-        <input 
-          type="password" 
-          id="senha" 
-          placeholder="Digite sua senha premium..."
-          onkeypress="if(event.key==='Enter') verificarSenha()"
-        >
-      </div>
-      
-      <button class="btn" onclick="verificarSenha()">
-        <i class="fas fa-unlock"></i>
-        Acessar Gerador
-      </button>
-    </div>
-
-    <!-- Generator Card -->
-    <div class="card hidden" id="gerador">
-      <div class="status-indicator">
-        <i class="fas fa-check-circle"></i>
-        Acesso Liberado
+    <section class="card" id="loginCard">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+        <div style="background:rgba(255,255,255,0.03);padding:.6rem;border-radius:10px"><i class="fa-solid fa-lock"></i></div>
+        <div>
+          <div style="font-weight:800">Acesso Premium</div>
+          <div style="color:var(--muted);font-size:.95rem">Insira sua senha para acessar o gerador ou use a versão gratuita limitada.</div>
+        </div>
       </div>
 
-      <div class="tutorial">
-        <h3><i class="fas fa-lightbulb"></i> Como Funciona</h3>
-        <p>
-          1. Escolha um estilo cinematográfico<br>
-          2. Digite sua frase em português<br>
-          3. Clique em "Gerar" para obter o prompt completo<br>
-          4. Use o prompt em qualquer IA geradora de vídeos
-        </p>
+      <div class="row" style="margin-top:0.8rem">
+        <div style="flex:1">
+          <label for="senha">Senha de Acesso</label>
+          <input id="senha" type="text" placeholder="Digite sua senha (admin123 / transforma)" onkeypress="if(event.key==='Enter') verificarSenha()">
+        </div>
+        <div>
+          <button class="btn" onclick="verificarSenha()"><i class="fa-solid fa-unlock"></i> Entrar</button>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="estilo">
-          <i class="fas fa-film"></i> Estilo Cinematográfico
-        </label>
-        <select id="estilo">
-          <option value="biblical">🕊️ Bíblico Cinematográfico</option>
-          <option value="epic">⚡ Épico / Trailer</option>
-          <option value="adoracao">🙏 Adoração / Contemporâneo</option>
-          <option value="acao">🗡️ Ação Espiritual</option>
-          <option value="anime">🎌 Anime Estilizado</option>
-          <option value="futurista">🚀 Futurista Profético</option>
-        </select>
+      <div class="note">Senha <strong>admin123</strong> = Acesso ilimitado. Senha <strong>transforma</strong> = 1 geração por 24h.</div>
+    </section>
+
+    <!-- Generator Card (hidden until login) -->
+    <section class="card" id="generatorCard" style="margin-top:1.4rem;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem">
+        <div style="display:flex;gap:1rem;align-items:center">
+          <div style="background:rgba(255,255,255,0.03);padding:.6rem;border-radius:10px"><i class="fa-solid fa-check-circle"></i></div>
+          <div>
+            <div style="font-weight:800">Gerador Cinematográfico</div>
+            <div style="color:var(--muted);font-size:.95rem">Digite sua ideia simples e obtenha um prompt otimizado.</div>
+          </div>
+        </div>
+        <div style="color:var(--muted);font-weight:700">Modo 35mm · Aprimoramento técnico automático</div>
       </div>
 
-      <div class="form-group">
-        <label for="fala">
-          <i class="fas fa-microphone"></i> Texto em Português
-        </label>
-        <input 
-          type="text" 
-          id="fala" 
-          placeholder="Ex: Com minha voz eu te levanto"
-          onkeypress="if(event.key==='Enter') gerarPrompt()"
-        >
+      <div>
+        <label for="inputIdea">Digite sua ideia (ex: "homem tocando violão no pôr do sol")</label>
+        <input id="inputIdea" type="text" placeholder="Escreva aqui sua frase simples..." onkeypress="if(event.key==='Enter') gerarPrompt()">
       </div>
 
-      <div class="flex gap-2 justify-center mb-2">
-        <button class="btn" onclick="gerarPrompt()">
-          <i class="fas fa-magic"></i>
-          Gerar Prompt
-        </button>
-        <button class="btn btn-secondary" onclick="copiarPrompt()">
-          <i class="fas fa-copy"></i>
-          Copiar
-        </button>
+      <div style="margin-top:1rem">
+        <label>Escolha o estilo desejado</label>
+        <div class="styles-list" id="stylesList">
+          <div class="style active" data-style="cinematic">Cinematográfico</div>
+          <div class="style" data-style="futuristic">Futurista</div>
+          <div class="style" data-style="realistic">Realista</div>
+          <div class="style" data-style="studio">Estúdio Fotográfico</div>
+          <div class="style" data-style="dramatic">Dramático</div>
+          <div class="style" data-style="automatic">Automático</div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="resultado">
-          <i class="fas fa-code"></i> Prompt Gerado
-        </label>
-        <textarea 
-          id="resultado" 
-          readonly 
-          placeholder="Seu prompt cinematográfico aparecerá aqui..."
-        ></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- Popup Tutorial -->
-  <div class="popup-overlay" id="popupTutorial">
-    <div class="popup">
-      <h2>
-        <i class="fas fa-rocket"></i> Bem-vindo ao Futuro
-      </h2>
-      <p>🎬 Crie prompts cinematográficos profissionais com inteligência artificial avançada.</p>
-      
-      <div class="pricing-highlight">
-        <p><strong>🆓 Acesso Gratuito:</strong> 1 geração a cada 24 horas</p>
-        <p><strong>💎 Premium Ilimitado:</strong> R$ 20,00/mês</p>
+      <div style="margin-top:1rem;display:flex;gap:1rem;align-items:center">
+        <button class="btn" onclick="gerarPrompt()"><i class="fa-solid fa-magic"></i> Gerar Prompt</button>
+        <button class="btn secondary" onclick="copiarResultado()"><i class="fa-solid fa-copy"></i> Copiar</button>
+        <div style="margin-left:auto;color:var(--muted);font-weight:700" id="usageTag">Grátis disponível</div>
       </div>
 
-      <div class="flex gap-2 justify-center">
-        <a href="https://biolivre.com.br/iagencialoja" target="_blank" class="btn">
-          <i class="fas fa-crown"></i>
-          Upgrade Premium
-        </a>
-        <button class="btn btn-secondary" onclick="fecharPopup()">
-          <i class="fas fa-play"></i>
-          Começar Grátis
-        </button>
+      <div class="result-box" id="resultBox" style="display:none;margin-top:1rem">
+        <label>Prompt Gerado</label>
+        <pre id="resultText" aria-live="polite"></pre>
       </div>
-    </div>
-  </div>
 
-  <footer>
-    <div>
-      <i class="fas fa-copyright"></i> 2025 Plínio Stúdio • Todos os direitos reservados
-    </div>
-    <div style="margin-top: 0.5rem;">
-      Powered by Advanced AI Technology
-    </div>
-  </footer>
+      <div class="note">Observação: O gerador <strong>aperfeiçoa tecnicamente</strong> a sua frase adicionando detalhes de composição, iluminação, lentes, resolução e atmosferas adequadas ao estilo selecionado.</div>
+    </section>
+  </main>
+
+  <footer style="text-align:center;padding:2rem 1rem;color:var(--muted);border-top:1px solid rgba(255,255,255,0.02);margin-top:3rem">© 2025 Plínio Stúdio • Todos os direitos reservados</footer>
 
   <script>
-    // Show tutorial popup on first visit
-    window.addEventListener("DOMContentLoaded", () => {
-      const hoje = new Date().toDateString();
-      const visto = localStorage.getItem("tutorialVisto");
-      if (visto !== hoje) {
-        document.getElementById("popupTutorial").style.display = "flex";
-      }
+    // ---------- Loader behavior ----------
+    document.addEventListener('DOMContentLoaded', () => {
+      // Show loader for ~3.5s then hide
+      const loader = document.getElementById('loader');
+      setTimeout(() => {
+        loader.style.transition = 'opacity 400ms ease';
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 450);
+      }, 3500);
+
+      // Styles selection toggles
+      document.querySelectorAll('.styles-list .style').forEach(el => {
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.styles-list .style').forEach(s=>s.classList.remove('active'));
+          el.classList.add('active');
+        });
+      });
     });
 
-    function fecharPopup() {
-      const hoje = new Date().toDateString();
-      localStorage.setItem("tutorialVisto", hoje);
-      document.getElementById("popupTutorial").style.display = "none";
-    }
-
-    function verificarSenha() {
+    // ---------- Access control (same logic) ----------
+    function verificarSenha(){
       const senha = document.getElementById('senha').value.trim();
-      const agora = new Date().getTime();
-      const ultimaEntrada = localStorage.getItem('acessoPlinio');
-      const vinteQuatroHoras = 24 * 60 * 60 * 1000;
+      const agora = Date.now();
+      const ultima = localStorage.getItem('acessoPlinio');
+      const vinteQuatro = 24*60*60*1000;
 
-      // Admin access
-      if (senha === 'admin123') {
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('gerador').classList.remove('hidden');
-        showNotification('Acesso administrativo liberado!', 'success');
+      if(senha === 'admin123'){
+        abrirGerador('Admin');
         return;
       }
 
-      // Free access with 24h limit
-      if (senha === 'transforma') {
-        if (ultimaEntrada && agora - parseInt(ultimaEntrada) < vinteQuatroHoras) {
-          const horasRestantes = Math.ceil((vinteQuatroHoras - (agora - parseInt(ultimaEntrada))) / 3600000);
-          showNotification(`Acesso já foi usado hoje. Próximo acesso em ${horasRestantes}h`, 'warning');
+      if(senha === 'transforma'){
+        if(ultima && agora - parseInt(ultima) < vinteQuatro){
+          const horas = Math.ceil((vinteQuatro - (agora - parseInt(ultima)))/3600000);
+          alert('Acesso já usado. Próximo em '+horas+'h');
           return;
         }
         localStorage.setItem('acessoPlinio', agora);
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('gerador').classList.remove('hidden');
-        showNotification('Acesso liberado! Aproveite sua geração gratuita.', 'success');
-      } else {
-        showNotification('Senha incorreta. Verifique suas credenciais.', 'error');
-      }
-    }
-
-    function gerarPrompt() {
-      const estilo = document.getElementById('estilo').value;
-      const fala = document.getElementById('fala').value.trim();
-      
-      if (!fala) {
-        showNotification('Por favor, digite um texto para gerar o prompt.', 'warning');
+        abrirGerador('Grátis');
         return;
       }
 
-      // Show loading
-      const btn = event.target;
-      const originalContent = btn.innerHTML;
-      btn.innerHTML = '<div class="loading"></div> Gerando...';
-      btn.disabled = true;
-
-      // Simulate AI processing
-      setTimeout(() => {
-        let prompt = gerarPromptPorEstilo(estilo, fala);
-        document.getElementById('resultado').value = prompt;
-        
-        btn.innerHTML = originalContent;
-        btn.disabled = false;
-        
-        showNotification('Prompt gerado com sucesso!', 'success');
-      }, 1500);
+      alert('Senha incorreta. Use admin123 ou transforma.');
     }
 
-    function gerarPromptPorEstilo(estilo, fala) {
-      const templates = {
-        biblical: `A young woman in biblical attire from the time of Jesus stands at dawn in a field of olive trees. She wears a light linen tunic, earth-toned mantle, and semi-transparent veil. The camera pushes in slowly (dolly-in). She sings: "${fala}" in perfect Brazilian Portuguese, with precise lip sync, subtle vibrato, and spiritual expression.
+    function abrirGerador(tag){
+      document.getElementById('loginCard').style.display='none';
+      document.getElementById('generatorCard').style.display='block';
+      document.getElementById('usageTag').textContent = tag === 'Admin' ? 'Acesso: Ilimitado' : 'Acesso: 1 geração / 24h';
+      document.getElementById('inputIdea').focus();
+    }
 
-Visual style: 4K, golden hour light, anamorphic lens, cinematic film grain, divine rays.
-Mood: sacred, divine connection, spiritual awakening.
-Technical: Professional color grading, depth of field, atmospheric haze.`,
+    // ---------- Prompt generation logic ----------
+    function gerarPrompt(){
+      const idea = document.getElementById('inputIdea').value.trim();
+      if(!idea){alert('Digite uma ideia simples para gerar o prompt.');return}
 
-        epic: `Cinematic trailer style. Intense close-ups, sweeping drone shots over ancient lands. Epic orchestral soundtrack building to crescendo. A powerful character declares in commanding Brazilian Portuguese: "${fala}" with dramatic slow-motion lip sync and heroic expression.
+      const style = document.querySelector('.styles-list .style.active').dataset.style || 'cinematic';
+      const optimized = aperfeicoarFrase(idea, style);
 
-Visual style: 4K, dramatic lighting, fast cuts, cinematic LUT, lens flares.
-Mood: powerful, dramatic, heroic, inspirational.
-Technical: Dynamic camera movement, color contrast, epic scale.`,
+      document.getElementById('resultBox').style.display='block';
+      document.getElementById('resultText').textContent = optimized;
+    }
 
-        adoracao: `A worship singer stands alone in a softly lit sanctuary or natural landscape. Warm golden light filters through. The camera orbits gracefully around her. She sings "${fala}" in heartfelt Brazilian Portuguese, with accurate lip sync and deep emotional expression.
+    function copiarResultado(){
+      const txt = document.getElementById('resultText').textContent;
+      if(!txt){alert('Nada para copiar — gere um prompt primeiro.');return}
+      navigator.clipboard.writeText(txt).then(()=>{alert('Prompt copiado!')}).catch(()=>{alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.')});
+    }
 
-Visual style: Soft natural light, shallow depth of field, 4K, warm tones.
-Mood: intimate, reverent, peaceful, worshipful.
-Technical: Smooth camera movement, bokeh effects, gentle color grading.`,
+    // Intelligent improvement function — rules-based with templates
+    function aperfeicoarFrase(frase, estilo){
+      // sanitize
+      const clean = frase.replace(/\s+/g,' ').trim();
 
-        acao: `A determined prophet runs through ancient stone streets under divine pursuit. Intense handheld camera follows closely. He turns with fierce determination and cries: "${fala}" in urgent Brazilian Portuguese, with passionate tone and perfect lip sync.
+      // Base descriptors extracted from user's words (very simple NLP-ish)
+      const parts = clean.split(/,| and | e | com | - /i).map(s=>s.trim()).filter(Boolean);
+      const subject = parts[0] || clean;
 
-Visual style: Handheld camera, motion blur, 4K, high contrast.
-Mood: intense, divine resistance, spiritual warfare.
-Technical: Dynamic lighting, fast-paced editing, dramatic angles.`,
+      // lens, resolution, camera descriptors
+      const baseTech = '8K, ultra-detailed, shallow depth of field, cinematic composition, professional color grading, film grain subtle';
 
-        anime: `Anime-style scene with glowing ethereal sky and floating particles. A young hero with expressive eyes shouts "${fala}" in emotional Portuguese, lips perfectly synced. Hair flows dramatically in divine wind, tears glisten like crystals.
-
-Visual style: HD anime cel shading, dramatic lighting, vivid colors, particle effects.
-Mood: emotional, heroic, poetic, transcendent.
-Technical: Anime motion blur, speed lines, magical aura effects.`,
-
-        futurista: `Sci-fi prophet figure in neon-lit ruins of future Jerusalem. Holographic scriptures flicker around her. She looks up to the heavens and speaks: "${fala}" in calm yet powerful Portuguese, with perfect lip sync and ethereal resonance.
-
-Visual style: 4K, cyberpunk aesthetics, glitch overlays, neon lighting, soft lens.
-Mood: prophetic, mysterious, spiritual, futuristic.
-Technical: Digital effects, hologram simulation, atmospheric fog, lens aberration.`
+      const descriptorsByStyle = {
+        cinematic: 'anamorphic lens, golden hour lighting, volumetric lighting, dramatic framing, soft film halation',
+        futuristic: 'neon rim light, chromatic aberration, holographic reflections, cyberpunk palette, dynamic lens flares',
+        realistic: 'natural lighting, photorealistic textures, true-to-life skin tones, accurate shadows, documentary feel',
+        studio: 'controlled strobe lighting, softbox, high-key studio backdrops, crisp details, shallow bokeh',
+        dramatic: 'high contrast, rim lighting, strong chiaroscuro, moody color grading, emotional close-ups',
+        automatic: 'balanced lighting, neutral color profile, optimized sharpness, general-purpose cinematic polish'
       };
 
-      return templates[estilo] || templates.biblical;
+      const styleDesc = descriptorsByStyle[estilo] || descriptorsByStyle.cinematic;
+
+      // Try to pick a subject noun and location/action hints
+      // naive extraction
+      let action = ''; let subjectNoun = subject;
+      const mAction = subject.match(/(tocando|cantando|correndo|falando|olhando|brincando|carregando|andando|dançando|tocando violão|tocando guitarra|tocando piano|cantor|música|cantora)/i);
+      if(mAction) action = mAction[0];
+
+      // Build final prompt
+      const promptParts = [];
+      promptParts.push('Cinematic 35mm style prompt:');
+      promptParts.push(`Scene: ${subjectNoun}.`);
+      promptParts.push(`Action: ${action || 'natural performance'}.`);
+      promptParts.push(`Visual: ${styleDesc}.`);
+      promptParts.push(`Technical: ${baseTech}, lens: 50mm/85mm suggested, film grain: fine.`);
+      promptParts.push('Mood: evocative, immersive, storytelling composition.');
+      promptParts.push('Language: produce in English prompts for image/video generators.');
+
+      return promptParts.join(' ');
     }
-
-    function copiarPrompt() {
-      const resultado = document.getElementById('resultado');
-      if (!resultado.value.trim()) {
-        showNotification('Nenhum prompt para copiar. Gere um primeiro!', 'warning');
-        return;
-      }
-
-      resultado.select();
-      document.execCommand('copy');
-      showNotification('Prompt copiado para a área de transferência!', 'success');
-    }
-
-    function showNotification(message, type = 'info') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        color: white;
-        font-weight: 600;
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-        max-width: 300px;
-        backdrop-filter: blur(10px);
-      `;
-
-      const colors = {
-        success: 'background: linear-gradient(135deg, #10b981, #059669); border: 1px solid rgba(16, 185, 129, 0.4);',
-        warning: 'background: linear-gradient(135deg, #f59e0b, #d97706); border: 1px solid rgba(245, 158, 11, 0.4);',
-        error: 'background: linear-gradient(135deg, #ef4444, #dc2626); border: 1px solid rgba(239, 68, 68, 0.4);',
-        info: 'background: linear-gradient(135deg, #7c3aed, #a855f7); border: 1px solid rgba(124, 58, 237, 0.4);'
-      };
-
-      notification.style.cssText += colors[type];
-      notification.textContent = message;
-
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
-    }
-
-    // Add slide animations
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-      @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-      }
-    `;
-    document.head.appendChild(style);
   </script>
 </body>
 </html>
